@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adam Barker — GIS Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ── Nav ── -->
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-logo" href="index.html">Adam Barker</a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── Hero / About ── -->
+  <div class="hero" id="about">
+    <div class="hero-text">
+      <h1>GIS Analyst &amp;<br>Spatial Developer</h1>
+      <p class="subtitle">Turning geographic data into clear, actionable insights.</p>
+      <p class="bio">
+        I'm Adam — a GIS professional with experience in spatial analysis, cartography,
+        and geospatial programming. I work with tools like QGIS, ArcGIS Pro, Python,
+        and PostGIS to solve real-world problems through maps and data.
+      </p>
+      <div class="btn-group">
+        <a class="btn btn-primary" href="#projects">View Projects</a>
+        <a class="btn btn-outline" href="#contact">Get in Touch</a>
+      </div>
+    </div>
+    <div class="avatar-wrap">
+      <!-- Replace src with your photo, or remove this block -->
+      <img class="avatar" src="img/avatar.jpg" alt="Adam Barker"
+           onerror="this.style.display='none'" />
+    </div>
+  </div>
+
+  <!-- ── Skills ── -->
+  <section>
+    <p class="section-label">Toolkit</p>
+    <h2 class="section-title">Skills &amp; Software</h2>
+    <div class="skills-grid">
+      <!-- Edit these to match your actual skills -->
+      <span class="skill-badge">QGIS</span>
+      <span class="skill-badge">ArcGIS Pro</span>
+      <span class="skill-badge">Python (GeoPandas)</span>
+      <span class="skill-badge">PostGIS / PostgreSQL</span>
+      <span class="skill-badge">Leaflet.js</span>
+      <span class="skill-badge">GDAL / OGR</span>
+      <span class="skill-badge">Spatial SQL</span>
+      <span class="skill-badge">Remote Sensing</span>
+      <span class="skill-badge">Cartographic Design</span>
+      <span class="skill-badge">Field Data Collection</span>
+    </div>
+  </section>
+
+  <!-- ── Projects ── -->
+  <section id="projects">
+    <p class="section-label">Work</p>
+    <h2 class="section-title">Projects</h2>
+    <div class="projects-grid">
+
+      <!-- ── PROJECT CARD 1 — edit or duplicate this block for each project ── -->
+      <div class="card">
+        <!-- Option A: use a screenshot image -->
+        <!-- <img class="card-img" src="img/project1-thumb.jpg" alt="Project 1 thumbnail"> -->
+        <!-- Option B: placeholder icon (remove when you add a real image) -->
+        <div class="card-img-placeholder">🗺️</div>
+        <div class="card-body">
+          <h3 class="card-title">Urban Green Space Analysis</h3>
+          <p class="card-desc">
+            Spatial equity analysis of park access across census tracts, identifying
+            underserved neighborhoods using network distance buffers and demographic overlays.
+          </p>
+          <div class="tag-row">
+            <span class="tag">QGIS</span>
+            <span class="tag">Python</span>
+            <span class="tag">Census Data</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="project-green-space.html">View Project →</a>
+          <!-- <a href="https://github.com/yourusername/project" target="_blank">GitHub</a> -->
+        </div>
+      </div>
+
+      <!-- ── PROJECT CARD 2 ── -->
+      <div class="card">
+        <div class="card-img-placeholder">🌊</div>
+        <div class="card-body">
+          <h3 class="card-title">Flood Risk Mapping</h3>
+          <p class="card-desc">
+            DEM-based terrain analysis to model 100-year floodplain extents and
+            identify at-risk structures using hydrological routing tools.
+          </p>
+          <div class="tag-row">
+            <span class="tag">ArcGIS Pro</span>
+            <span class="tag">DEM</span>
+            <span class="tag">Hydrology</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="project-flood.html">View Project →</a>
+        </div>
+      </div>
+
+      <!-- ── PROJECT CARD 3 ── -->
+      <div class="card">
+        <div class="card-img-placeholder">🛰️</div>
+        <div class="card-body">
+          <h3 class="card-title">Land Cover Change Detection</h3>
+          <p class="card-desc">
+            Multi-temporal Landsat imagery classification to detect deforestation
+            and urban expansion over a 20-year period using supervised ML classifiers.
+          </p>
+          <div class="tag-row">
+            <span class="tag">Remote Sensing</span>
+            <span class="tag">Python</span>
+            <span class="tag">Landsat</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="project-land-cover.html">View Project →</a>
+        </div>
+      </div>
+
+      <!-- Add more cards by copying the block above -->
+
+    </div>
+  </section>
+
+  <!-- ── Contact ── -->
+  <section id="contact">
+    <p class="section-label">Contact</p>
+    <h2 class="section-title">Get in Touch</h2>
+    <div class="contact-box">
+      <p>
+        I'm currently looking for GIS analyst and spatial developer roles.
+        Feel free to reach out — I'd love to talk about your project or team.
+      </p>
+      <div class="contact-links">
+        <a href="mailto:barker.a@gmail.com">barker.a@gmail.com</a>
+        <!-- Replace with your real links -->
+        <a href="https://linkedin.com/in/yourprofile" target="_blank">LinkedIn</a>
+        <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+        <a href="img/adam-barker-cv.pdf" target="_blank">Download CV</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <p>© 2026 Adam Barker · Built with HTML, CSS &amp; Leaflet.js</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
