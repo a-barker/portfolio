@@ -391,6 +391,16 @@ footer {
 }
 .screenshot-grid img:hover { box-shadow: var(--shadow-md); }
 
+.screenshot-figure {
+  margin: 0;
+}
+
+.screenshot-figure figcaption {
+  font-size: .8rem;
+  color: var(--clr-muted);
+  margin-top: .35rem;
+}
+
 /* Sidebar */
 .project-sidebar {
   position: sticky;
