@@ -230,8 +230,8 @@ section { max-width: var(--max-w); margin: 0 auto; padding: 3.5rem 1.5rem; }
 .card-img {
   width: 100%;
   height: 200px;
-  object-fit: cover;
-  background: var(--clr-border);
+  object-fit: contain;
+  background: #f1f5f9;
 }
 
 .card-img-placeholder {
