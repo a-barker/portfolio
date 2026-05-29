@@ -73,14 +73,15 @@
 
       <h2>Methodology</h2>
       <p>
-        Capital Improvement Project Area
+        This project uses ArcGIS Pro, Survey123, and Experience Builder to collect and
+        visualize field data, supporting real-time infrastructure assessment and decision-making.
+        Data was then exported to QGIS and made available via webmap.
       </p>
       <ul>
-        <li>Fetched OSM park polygons using <code>osmnx.geometries_from_place()</code></li>
-        <li>Computed network buffers at 400 m and 800 m walk distances</li>
-        <li>Joined ACS demographic tables to tract geometries via FIPS code</li>
-        <li>Calculated park access score: % of tract population within 800 m of a park</li>
-        <li>Visualised results with Matplotlib and exported final map in QGIS</li>
+        <li>Field technicians collect infrastructure data using <strong>Survey123</strong> on mobile devices</li>
+        <li>Submissions are integrated into <strong>ArcGIS Pro</strong> for spatial analysis and attribute standardization</li>
+        <li>Results are visualized in an <strong>Experience Builder</strong> dashboard for real-time decision-making</li>
+        <li>Data exported to <strong>QGIS</strong> and published as a publicly accessible webmap</li>
       </ul>
 
       <h2>Key Findings</h2>
