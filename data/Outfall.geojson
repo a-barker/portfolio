@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Outfall",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3857" } },
+"features": [
+{ "type": "Feature", "properties": { "qc_id": 0, "id": 0 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ -11678557.02945676073432, 4779462.167910044081509 ] ] } }
+]
+}

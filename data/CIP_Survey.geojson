@@ -1,0 +1,10 @@
+{
+"type": "FeatureCollection",
+"name": "CIP_Survey",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "qc_id": 0, "globalid": "9f25526b-d4cf-438e-8f36-5aac946d180c", "creationda": "2026-03-24", "creator": "adamatlsgis", "editdate": "2026-03-24", "editor": "adamatlsgis", "name": "Adam", "organizati": "Little Sierra", "comment": "Cherokee Drive bridge needs repairs also" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -104.910493995956884, 39.40254292209211 ], [ -104.910418894104467, 39.402161570488957 ], [ -104.909152891449551, 39.402136699659799 ], [ -104.909431841187072, 39.402634114557863 ], [ -104.910493995956884, 39.40254292209211 ] ] ] ] } },
+{ "type": "Feature", "properties": { "qc_id": 1, "globalid": "5ce89c37-5002-4156-8eac-dd880481fb4c", "creationda": "2026-03-24", "creator": "adamatlsgis", "editdate": "2026-03-24", "editor": "adamatlsgis", "name": "Jim", "organizati": "Bob", "comment": "These houses have flood damage" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -104.911930151246224, 39.402571937889562 ], [ -104.912370033524638, 39.402389552676226 ], [ -104.912015981934715, 39.4017512006738 ], [ -104.910631962083144, 39.401676587720743 ], [ -104.911930151246224, 39.402571937889562 ] ] ] ] } },
+{ "type": "Feature", "properties": { "qc_id": 2, "globalid": "36174f01-1b61-4433-81f6-46b937e9a225", "creationda": "2026-03-24", "creator": "adamatlsgis", "editdate": "2026-03-24", "editor": "adamatlsgis", "name": "John Doe", "organizati": "City of Castle Rock", "comment": "This area needs dirt added" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -104.90950543429669, 39.401885918303442 ], [ -104.90865785624807, 39.400932526405441 ], [ -104.908389635346609, 39.401239271307581 ], [ -104.908893890641352, 39.401935660131734 ], [ -104.90950543429669, 39.401885918303442 ] ] ] ] } }
+]
+}

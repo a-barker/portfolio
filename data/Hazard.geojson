@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Hazard",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3857" } },
+"features": [
+{ "type": "Feature", "properties": { "qc_id": 0, "severity": "F", "comment": "This channel and outfall have extreme damage.", "globalid": "2ac873bf-e78d-4bbd-9c4f-6ee69fa35feb", "inspection": "2026-03-10" }, "geometry": { "type": "MultiPoint", "coordinates": [ [ -11678543.2213, 4779469.185099996626377 ] ] } }
+]
+}

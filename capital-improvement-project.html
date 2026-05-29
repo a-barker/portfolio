@@ -51,6 +51,7 @@
         This project uses ArcGIS Pro, Survey123, and Experience Builder to 
         collect and visualize field data, supporting real-time infrastructure 
         assessment and decision-making.
+        Data was then exported to QGIS and made available via webmap.
       </p>
 
       <!-- Interactive Leaflet Map -->
@@ -63,11 +64,7 @@
 
       <h2>Methodology</h2>
       <p>
-        Park polygons were sourced from OpenStreetMap via the Overpass API. Census
-        tract boundaries and demographic data came from the 2020 ACS 5-Year estimates.
-        A 400 m and 800 m pedestrian network buffer was generated for each park using
-        OSMNX in Python, then intersected with census tract geometries to calculate
-        population within walking distance.
+        Capital Improvement Project Area
       </p>
       <ul>
         <li>Fetched OSM park polygons using <code>osmnx.geometries_from_place()</code></li>
@@ -79,10 +76,7 @@
 
       <h2>Key Findings</h2>
       <p>
-        Tracts in the southern and eastern districts had the lowest park-access scores
-        (&lt; 20% of residents within 800 m), and these areas were also significantly
-        lower in median household income. The correlation between income quartile and
-        green-space access was 0.61 (Pearson's r), suggesting a strong equity gap.
+        Outfall with damamage is identified by a Field Technician and colleceted with ArcGIS Field Maps on Android Phone
       </p>
 
       <!-- Screenshots -->
@@ -92,13 +86,16 @@
           Replace these src paths with your actual exported map images.
           Put the images in the img/ folder.
         -->
-        <img src="img/green-space-1.jpg" alt="Park access heat map"
+        <img src="img/CIP-1.jpg" alt="Experience Builder"
              onerror="this.src=''; this.alt='[Replace with your screenshot]'; this.style.background='#dbeafe'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.style.fontSize='.85rem'; this.style.color='#64748b';"
              onclick="openLightbox(this.src)" />
-        <img src="img/green-space-2.jpg" alt="Demographic overlay"
+        <img src="img/CIP-2.jpg" alt="CIP WebMap"
              onerror="this.src=''; this.alt='[Replace with your screenshot]'; this.style.background='#dbeafe';"
              onclick="openLightbox(this.src)" />
-        <img src="img/green-space-3.jpg" alt="Final cartographic output"
+        <img src="img/CIP-3.jpg" alt="Survey123 data collected remotely"
+             onerror="this.src=''; this.alt='[Replace with your screenshot]'; this.style.background='#dbeafe';"
+             onclick="openLightbox(this.src)" />
+        <img src="img/CIP-4.jpg" alt="Survey areas collected"
              onerror="this.src=''; this.alt='[Replace with your screenshot]'; this.style.background='#dbeafe';"
              onclick="openLightbox(this.src)" />
       </div>
@@ -183,6 +180,7 @@
     //     .then(data => L.geoJSON(data, { style: { color: '#22c55e', fillOpacity: .4 } }).addTo(map));
 
     const sampleParks = [
+      { name: "Outfall w/Damage",    lat: 39.4023, lng: -104.9103},
       { name: "Central Park",        lat: 40.7851, lng: -73.9683 },
       { name: "Prospect Park",       lat: 40.6602, lng: -73.9690 },
       { name: "Riverside Park",      lat: 40.8017, lng: -73.9718 },
