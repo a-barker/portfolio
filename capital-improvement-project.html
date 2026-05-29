@@ -62,6 +62,15 @@
         <code>js/main.js</code> with your own GeoJSON layers.
       </p>
 
+      <h2>Live Map</h2>
+      <iframe 
+        src="https://qgiscloud.com/lsgis/CastleRockCIPweb/"
+        width="100%"
+        height="500"
+        style="border: 1px solid var(--clr-border); border-radius: var(--radius);"
+        allowfullscreen>
+      </iframe>
+
       <h2>Methodology</h2>
       <p>
         Capital Improvement Project Area
@@ -181,9 +190,6 @@
 
     const sampleParks = [
       { name: "Outfall w/Damage",    lat: 39.4023, lng: -104.9103},
-      { name: "Central Park",        lat: 40.7851, lng: -73.9683 },
-      { name: "Prospect Park",       lat: 40.6602, lng: -73.9690 },
-      { name: "Riverside Park",      lat: 40.8017, lng: -73.9718 },
     ];
 
     sampleParks.forEach(p => {
@@ -193,7 +199,7 @@
         fillColor: '#22c55e',
         fillOpacity: .6,
         weight: 2
-      }).addTo(map).bindPopup(`<strong>${p.name}</strong><br>Sample park marker`);
+      }).addTo(map).bindPopup(`<strong>${p.name}</strong><br>CastleRock CIP`);
     });
 
     // ── Lightbox helpers ──
