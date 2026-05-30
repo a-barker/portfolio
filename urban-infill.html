@@ -3,12 +3,276 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Capital Improvement Planning Dashboard | Castle Rock, CO — Adam Barker</title>
+  <title>Las Vegas Residential Infill Potential Analysis — Adam Barker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Story Map Overrides ── */
+    body { background: #fff; }
+
+    /* Cover */
+    .story-cover {
+      position: relative;
+      min-height: 92vh;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      background: #0d1f2d;
+    }
+    .story-cover img.cover-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .45;
+    }
+    .story-cover-content {
+      position: relative;
+      max-width: 760px;
+      padding: 3rem 2.5rem 4rem;
+      color: #fff;
+    }
+    .story-cover-content .back-link {
+      color: rgba(255,255,255,.7);
+      font-size: .85rem;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+    }
+    .story-cover-content .back-link:hover { color: #fff; }
+    .story-cover-content .story-label {
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #93c5fd;
+      margin-bottom: .75rem;
+    }
+    .story-cover-content h1 {
+      font-family: 'Merriweather', Georgia, serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+    .story-cover-content .story-subtitle {
+      font-size: 1.15rem;
+      color: rgba(255,255,255,.8);
+      font-style: italic;
+      margin-bottom: 1.25rem;
+      max-width: 560px;
+    }
+    .story-cover-content .story-byline {
+      font-size: .85rem;
+      color: rgba(255,255,255,.6);
+    }
+    .story-cover-content .story-byline strong { color: rgba(255,255,255,.85); }
+
+    /* Scroll cue */
+    .scroll-cue {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,.5);
+      font-size: .8rem;
+      text-align: center;
+      animation: bounce 2s infinite;
+    }
+    .scroll-cue::after { content: '↓'; display: block; font-size: 1.2rem; }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* Story sections */
+    .story-section {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem;
+    }
+    .story-section.wide {
+      max-width: 1000px;
+    }
+    .story-section h2 {
+      font-family: 'Merriweather', Georgia, serif;
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: #0d1f2d;
+      margin-bottom: 1rem;
+      line-height: 1.3;
+    }
+    .story-section p {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #374151;
+      margin-bottom: 1.2rem;
+    }
+    .story-section p:last-child { margin-bottom: 0; }
+
+    /* Pull quote */
+    .pull-quote {
+      border-left: 4px solid #2563eb;
+      margin: 2.5rem 0;
+      padding: .75rem 1.5rem;
+      background: #f0f6ff;
+      border-radius: 0 8px 8px 0;
+    }
+    .pull-quote p {
+      font-family: 'Merriweather', Georgia, serif;
+      font-size: 1.15rem;
+      font-style: italic;
+      color: #1e3a5f;
+      margin: 0;
+    }
+
+    /* Full-width image break */
+    .story-img-full {
+      width: 100%;
+      max-height: 520px;
+      object-fit: cover;
+      display: block;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+    .story-img-full:hover { opacity: .92; }
+
+    /* Side-by-side images */
+    .story-img-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 0 auto;
+      max-width: 1000px;
+      padding: 0 1.5rem;
+    }
+    .story-img-pair figure { margin: 0; }
+    .story-img-pair img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+    .story-img-pair img:hover { opacity: .9; }
+
+    /* Single contained image */
+    .story-img-contained {
+      display: block;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .story-img-contained img {
+      width: 100%;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: opacity .2s;
+      box-shadow: 0 4px 20px rgba(0,0,0,.1);
+    }
+    .story-img-contained img:hover { opacity: .9; }
+
+    /* Caption */
+    .story-caption {
+      text-align: center;
+      font-size: .82rem;
+      color: #6b7280;
+      margin-top: .6rem;
+      padding: 0 1.5rem;
+      font-style: italic;
+    }
+
+    /* Divider */
+    .story-divider {
+      width: 60px;
+      height: 3px;
+      background: #2563eb;
+      margin: 0 auto 3rem;
+      border-radius: 2px;
+    }
+
+    /* Dark interlude */
+    .story-interlude {
+      background: #0d1f2d;
+      color: #fff;
+      padding: 4rem 1.5rem;
+      text-align: center;
+    }
+    .story-interlude h2 {
+      font-family: 'Merriweather', Georgia, serif;
+      font-size: 1.6rem;
+      color: #fff;
+      margin-bottom: 1rem;
+    }
+    .story-interlude p {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,.75);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    /* Conclusion */
+    .story-conclusion {
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      padding: 5rem 1.5rem;
+      text-align: center;
+    }
+    .story-conclusion h2 {
+      font-family: 'Merriweather', Georgia, serif;
+      font-size: 1.8rem;
+      color: #0d1f2d;
+      margin-bottom: 1rem;
+    }
+    .story-conclusion p {
+      font-size: 1.1rem;
+      color: #374151;
+      max-width: 600px;
+      margin: 0 auto 1rem;
+      line-height: 1.8;
+    }
+    .story-conclusion .closing-line {
+      font-family: 'Merriweather', Georgia, serif;
+      font-size: 1.2rem;
+      font-style: italic;
+      color: #2563eb;
+      margin-top: 2rem;
+    }
+
+    /* Sidebar meta strip */
+    .story-meta-strip {
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 2rem 1.5rem;
+    }
+    .story-meta-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    .story-meta-group h4 {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: .5rem;
+    }
+    .story-meta-group .tag-row { gap: .4rem; }
+
+    @media (max-width: 640px) {
+      .story-img-pair { grid-template-columns: 1fr; }
+      .story-cover-content { padding: 2rem 1.25rem 3rem; }
+    }
+  </style>
 </head>
 <body>
 
@@ -24,134 +288,192 @@
     </div>
   </nav>
 
-  <!-- ── Project Header ── -->
-  <div class="project-header">
-    <a class="back-link" href="index.html#projects">← All Projects</a>
-    <div class="project-meta">
-      <span class="tag">ArcGIS Pro</span>
-      <span class="tag">Survey123</span>
-      <span class="tag">Experience Builder</span>
-      <span class="tag">Urban Planning</span>
+  <!-- ── Cover ── -->
+  <div class="story-cover">
+    <img class="cover-img" src="img/infill-5.jpg" alt="Las Vegas infill map"
+         onerror="this.style.display='none'" />
+    <div class="story-cover-content">
+      <a class="back-link" href="index.html#projects">← All Projects</a>
+      <p class="story-label">Urban Planning · ArcGIS Pro · ModelBuilder</p>
+      <h1>Las Vegas Residential Infill Potential Analysis</h1>
+      <p class="story-subtitle">A parcel-level analysis of development capacity in Clark County, Nevada</p>
+      <p class="story-byline"><strong>Adam Barker</strong> &nbsp;·&nbsp; April 29, 2026</p>
     </div>
-    <h1>Capital Improvement Planning Dashboard</h1>
-    <p style="color:var(--clr-muted); margin-top:.5rem;">
-      Capital Inprovement Project that evaluates the damage of an Outfall
+    <div class="scroll-cue">Scroll to explore</div>
+  </div>
+
+  <!-- ── Section 1: The Question ── -->
+  <div class="story-section">
+    <h2>Where can Las Vegas still grow?</h2>
+    <p>
+      Las Vegas continues to grow — but where can that growth still happen? As available land
+      becomes more limited, understanding where new housing can fit within the existing city
+      is becoming increasingly important.
+    </p>
+    <p>
+      This analysis explores existing development patterns and identifies areas with remaining
+      residential infill potential.
+    </p>
+    <div class="pull-quote">
+      <p>This analysis was developed in ArcGIS Pro using ModelBuilder by integrating parcel,
+      zoning, dwelling unit, and constraint datasets.</p>
+    </div>
+    <p>
+      To answer this, areas that cannot be developed — such as parks, trails, and military land —
+      were removed from consideration. What remains highlights where new housing could
+      realistically be added.
     </p>
   </div>
 
-  <!-- ── Project Body ── -->
-  <div class="project-body">
+  <!-- ── Image: infill-1 (ModelBuilder) ── -->
+  <div class="story-img-contained">
+    <img src="img/infill-1.jpg" alt="ModelBuilder workflow in ArcGIS Pro 3.6.3"
+         onerror="this.style.background='#dbeafe'; this.style.minHeight='300px';"
+         onclick="openLightbox(this.src)" />
+  </div>
+  <p class="story-caption">ModelBuilder workflow — ArcGIS Pro 3.6.3</p>
 
-    <!-- Main content -->
-    <div class="project-content">
-
-      <h2>Overview</h2>
-      <p>
-        GIS-based Capital Improvement Planning dashboard for Castle Rock, CO. 
-        This project uses ArcGIS Pro, Survey123, and Experience Builder to 
-        collect and visualize field data, supporting real-time infrastructure 
-        assessment and decision-making.
-      </p>
-
-      <!-- Interactive Leaflet Map -->
-      <h2>Interactive Map</h2>
-      <div id="project-map"></div>
-      <p style="font-size:.85rem; color:var(--clr-muted); margin-top:-.5rem;">
-        ↑ Zoom and click features to explore. Replace the sample data in
-        <code>js/main.js</code> with your own GeoJSON layers.
-      </p>
-
-      <h2>Methodology</h2>
-      <p>
-        Park polygons were sourced from OpenStreetMap via the Overpass API. Census
-        tract boundaries and demographic data came from the 2020 ACS 5-Year estimates.
-        A 400 m and 800 m pedestrian network buffer was generated for each park using
-        OSMNX in Python, then intersected with census tract geometries to calculate
-        population within walking distance.
-      </p>
-      <ul>
-        <li>Fetched OSM park polygons using <code>osmnx.geometries_from_place()</code></li>
-        <li>Computed network buffers at 400 m and 800 m walk distances</li>
-        <li>Joined ACS demographic tables to tract geometries via FIPS code</li>
-        <li>Calculated park access score: % of tract population within 800 m of a park</li>
-        <li>Visualised results with Matplotlib and exported final map in QGIS</li>
-      </ul>
-
-      <h2>Key Findings</h2>
-      <p>
-        Tracts in the southern and eastern districts had the lowest park-access scores
-        (&lt; 20% of residents within 800 m), and these areas were also significantly
-        lower in median household income. The correlation between income quartile and
-        green-space access was 0.61 (Pearson's r), suggesting a strong equity gap.
-      </p>
-
-      <!-- Screenshots -->
-      <h2>Screenshots</h2>
-      <div class="screenshot-grid">
-        <!--
-          Replace these src paths with your actual exported map images.
-          Put the images in the img/ folder.
-        -->
-        <img src="img/green-space-1.jpg" alt="Park access heat map"
-             onerror="this.src=''; this.alt='[Replace with your screenshot]'; this.style.background='#dbeafe'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.style.fontSize='.85rem'; this.style.color='#64748b';"
-             onclick="openLightbox(this.src)" />
-        <img src="img/green-space-2.jpg" alt="Demographic overlay"
-             onerror="this.src=''; this.alt='[Replace with your screenshot]'; this.style.background='#dbeafe';"
-             onclick="openLightbox(this.src)" />
-        <img src="img/green-space-3.jpg" alt="Final cartographic output"
-             onerror="this.src=''; this.alt='[Replace with your screenshot]'; this.style.background='#dbeafe';"
-             onclick="openLightbox(this.src)" />
-      </div>
-
-    </div>
-
-    <!-- Sidebar -->
-    <aside class="project-sidebar">
-
-      <div class="sidebar-card">
-        <h3>Tools Used</h3>
-        <div class="tag-row">
-          <span class="tag">QGIS 3.x</span>
-          <span class="tag">Python 3</span>
-          <span class="tag">GeoPandas</span>
-          <span class="tag">OSMNX</span>
-          <span class="tag">Matplotlib</span>
-          <span class="tag">PostGIS</span>
-        </div>
-      </div>
-
-      <div class="sidebar-card">
-        <h3>Data Sources</h3>
-        <div class="tag-row">
-          <span class="tag">OpenStreetMap</span>
-          <span class="tag">US Census ACS</span>
-          <span class="tag">TIGER/Line</span>
-        </div>
-      </div>
-
-      <div class="sidebar-card">
-        <h3>Links</h3>
-        <div class="sidebar-links">
-          <!-- Replace href values with your real URLs -->
-          <a href="https://github.com/yourusername/green-space" target="_blank">
-            📁 View Code on GitHub
-          </a>
-          <a href="img/green-space-report.pdf" target="_blank">
-            📄 Download Report (PDF)
-          </a>
-          <a href="img/green-space-data.zip" target="_blank">
-            🗂️ Download Data
-          </a>
-        </div>
-      </div>
-
-    </aside>
+  <!-- ── Section 2: Methodology ── -->
+  <div class="story-section">
+    <h2>Filtering the landscape</h2>
+    <p>
+      Parcels were filtered to remove constrained areas such as public lands and incompatible
+      zoning. Spatial analysis techniques — including erase and spatial join operations — were
+      used to isolate developable parcels and estimate infill potential based on zoning constraints.
+    </p>
+    <p>
+      Not all land can support new development. Parks, trails, and protected areas reduce the
+      amount of space available for housing and play a key role in shaping where growth can occur.
+    </p>
   </div>
 
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <button class="lightbox-close" onclick="closeLightbox()">×</button>
-    <img id="lightbox-img" src="" alt="Full-size screenshot" />
+  <!-- ── Image: infill-4 (Non-developable land) ── -->
+  <img class="story-img-full" src="img/infill-4.jpg" alt="Las Vegas Non-Developable Land"
+       onerror="this.style.background='#dbeafe'; this.style.minHeight='400px';"
+       onclick="openLightbox(this.src)" />
+  <p class="story-caption">Las Vegas Non-Developable Land</p>
+
+  <!-- ── Dark Interlude: Density ── -->
+  <div class="story-interlude">
+    <h2>Where are people already living?</h2>
+    <p>
+      Existing dwelling units are concentrated in higher-density census tracts across the
+      Las Vegas Valley. These areas represent the majority of current residential development
+      and reflect established urban growth patterns.
+    </p>
+  </div>
+
+  <!-- ── Images: infill-2 + infill-3 side by side ── -->
+  <div class="story-img-pair">
+    <figure>
+      <img src="img/infill-2.jpg" alt="Residential density map"
+           onerror="this.style.background='#dbeafe';"
+           onclick="openLightbox(this.src)" />
+      <p class="story-caption" style="text-align:left;">Residential density — existing dwelling units</p>
+    </figure>
+    <figure>
+      <img src="img/infill-3.jpg" alt="Urban sprawl map"
+           onerror="this.style.background='#dbeafe';"
+           onclick="openLightbox(this.src)" />
+      <p class="story-caption" style="text-align:left;">Urban sprawl gradient</p>
+    </figure>
+  </div>
+
+  <!-- ── Section 3: Density & Sprawl ── -->
+  <div class="story-section">
+    <h2>Density and sprawl tell different stories</h2>
+    <p>
+      Denser parts of the city tend to have fewer opportunities for new development, while
+      lower-density areas often have more room to grow. Residential density is shown in blue,
+      while urban sprawl is represented using a yellow-to-red gradient.
+    </p>
+    <p>
+      Understanding density is only part of the story. To better evaluate development patterns,
+      we also look at urban sprawl.
+    </p>
+  </div>
+
+  <!-- ── Image: infill-5 (Zoning / Infill Potential) ── -->
+  <img class="story-img-full" src="img/infill-5.jpg" alt="Current Las Vegas Zoning Districts"
+       onerror="this.style.background='#dbeafe'; this.style.minHeight='400px';"
+       onclick="openLightbox(this.src)" />
+  <p class="story-caption">Current Las Vegas Zoning Districts</p>
+
+  <!-- ── Section 4: Infill Potential ── -->
+  <div class="story-section">
+    <h2>Limited room to grow</h2>
+    <p>
+      Residential infill potential is limited across the study area and is primarily confined
+      to vacant or underutilized parcels. High-density areas show minimal remaining capacity,
+      indicating they are largely built out.
+    </p>
+    <p>
+      Opportunities for additional development are more common in lower-density areas where
+      land remains available.
+    </p>
+  </div>
+
+  <!-- ── Image: infill-6 (Parcel-level results) ── -->
+  <div class="story-img-contained">
+    <img src="img/infill-6.jpg" alt="Las Vegas Residential Infill Potential at parcel level"
+         onerror="this.style.background='#dbeafe'; this.style.minHeight='300px';"
+         onclick="openLightbox(this.src)" />
+  </div>
+  <p class="story-caption">Las Vegas Residential Infill Potential Analysis — parcel level</p>
+
+  <!-- ── Section 5: Parcel-level findings ── -->
+  <div class="story-section">
+    <h2>Opportunities are limited — and uneven</h2>
+    <p>
+      At the parcel level, opportunities for additional housing are limited across the city.
+      While some areas show little to no potential, others stand out as strong candidates for
+      infill development. Most of the opportunities for infill have already started.
+    </p>
+  </div>
+
+  <!-- ── Conclusion ── -->
+  <div class="story-conclusion">
+    <div class="story-divider"></div>
+    <h2>What this means for Las Vegas</h2>
+    <p>
+      These results show that opportunities for new housing are limited and unevenly distributed.
+      As Las Vegas continues to grow, future development will depend on how effectively these
+      remaining areas are used.
+    </p>
+    <p class="closing-line">
+      The challenge is no longer where Las Vegas can grow — but how efficiently it can use
+      the space that remains.
+    </p>
+  </div>
+
+  <!-- ── Meta Strip ── -->
+  <div class="story-meta-strip">
+    <div class="story-meta-inner">
+      <div class="story-meta-group">
+        <h4>Tools Used</h4>
+        <div class="tag-row">
+          <span class="tag">ArcGIS Pro</span>
+          <span class="tag">ModelBuilder</span>
+          <span class="tag">QGIS</span>
+        </div>
+      </div>
+      <div class="story-meta-group">
+        <h4>Techniques</h4>
+        <div class="tag-row">
+          <span class="tag">Spatial Join</span>
+          <span class="tag">Erase</span>
+          <span class="tag">Parcel Analysis</span>
+          <span class="tag">Zoning Analysis</span>
+        </div>
+      </div>
+      <div class="story-meta-group">
+        <h4>Study Area</h4>
+        <div class="tag-row">
+          <span class="tag">Clark County, NV</span>
+          <span class="tag">Las Vegas Valley</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ── Footer ── -->
@@ -159,46 +481,13 @@
     <p>© 2026 Adam Barker · <a href="index.html#projects">← Back to Projects</a></p>
   </footer>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="js/main.js"></script>
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <img id="lightbox-img" src="" alt="Full-size image" />
+  </div>
+
   <script>
-    // ── Interactive Map Setup ──
-    // This initialises a Leaflet map centred on a sample city.
-    // Change the lat/lng and zoom to match your study area.
-    // Add your own GeoJSON layers below.
-
-    const map = L.map('project-map').setView([39.401735,-104.910193], 12); // Castle Rock CO
-
-    // Base tile layer (OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-      maxZoom: 19
-    }).addTo(map);
-
-    // ── Sample park marker — replace with real GeoJSON ──
-    // To load a GeoJSON file:
-    //   fetch('data/parks.geojson')
-    //     .then(r => r.json())
-    //     .then(data => L.geoJSON(data, { style: { color: '#22c55e', fillOpacity: .4 } }).addTo(map));
-
-    const sampleParks = [
-      { name: "Central Park",        lat: 40.7851, lng: -73.9683 },
-      { name: "Prospect Park",       lat: 40.6602, lng: -73.9690 },
-      { name: "Riverside Park",      lat: 40.8017, lng: -73.9718 },
-    ];
-
-    sampleParks.forEach(p => {
-      L.circleMarker([p.lat, p.lng], {
-        radius: 10,
-        color: '#16a34a',
-        fillColor: '#22c55e',
-        fillOpacity: .6,
-        weight: 2
-      }).addTo(map).bindPopup(`<strong>${p.name}</strong><br>Sample park marker`);
-    });
-
-    // ── Lightbox helpers ──
     function openLightbox(src) {
       if (!src) return;
       document.getElementById('lightbox-img').src = src;
