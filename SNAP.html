@@ -186,7 +186,7 @@
   <script src="js/main.js"></script>
   <script>
     // ── Choropleth map: Predicted SNAP households by state (2018) ──
-    const map = L.map('project-map').setView([39, -96], 4);
+    const map = L.map('project-map').setView([38, -96], 4);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
@@ -226,7 +226,6 @@
           }
         }).addTo(map);
 
-        map.fitBounds(layer.getBounds());
       });
 
     // ── Lightbox helpers ──
