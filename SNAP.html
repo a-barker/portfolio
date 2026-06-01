@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Capital Improvement Planning Dashboard | Castle Rock, CO — Adam Barker</title>
+  <title>SNAP Benefit Risk Analysis — Adam Barker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- Leaflet CSS -->
@@ -28,14 +28,15 @@
   <div class="project-header">
     <a class="back-link" href="index.html#projects">← All Projects</a>
     <div class="project-meta">
-      <span class="tag">ArcGIS Pro</span>
-      <span class="tag">Survey123</span>
-      <span class="tag">Experience Builder</span>
-      <span class="tag">Urban Planning</span>
+      <span class="tag">QGIS</span>
+      <span class="tag">Python</span>
+      <span class="tag">Jupyter</span>
+      <span class="tag">Pandas</span>
+      <span class="tag">GitHub</span>
     </div>
-    <h1>Capital Improvement Planning Dashboard</h1>
+    <h1>SNAP Benefit Risk Analysis</h1>
     <p style="color:var(--clr-muted); margin-top:.5rem;">
-      Capital Inprovement Project that evaluates the damage of an Outfall
+      Identifying the characteristics of food-insecure households to direct support where it is most needed during periods of financial stress.
     </p>
   </div>
 
@@ -47,60 +48,85 @@
 
       <h2>Overview</h2>
       <p>
-        GIS-based Capital Improvement Planning dashboard for Castle Rock, CO. 
-        This project uses ArcGIS Pro, Survey123, and Experience Builder to 
-        collect and visualize field data, supporting real-time infrastructure 
-        assessment and decision-making.
+        SNAP (formerly Food Stamps) is a critical lifeline for households that struggle to cover grocery costs.
+        Economic downturns hit certain communities harder — and those same communities tend to recover more slowly.
+        This project assessed demographics vulnerable to food insecurity using SNAP data from the USDA,
+        conducting a 10-year gap analysis comparing 2007 and 2017 datasets to examine the lasting impacts of the 2008 housing crisis.
+      </p>
+      <p>
+        The analysis focused on two contrasting states identified through prior GIS spatial analysis:
+        <strong>New Mexico</strong> (an emerging hot spot) and <strong>Nebraska</strong> (an emerging cold spot).
       </p>
 
-      <!-- Interactive Leaflet Map -->
-      <h2>Interactive Map</h2>
+      <!-- QGIS Webmap -->
+      <h2>Interactive QGIS Webmap</h2>
+      <iframe
+        src="https://qgiscloud.com/lsgis/AnalyzeFoodInsecurity_final_web/?l=StatesNamesLabel%2Ccb_2018_us_state_500k!%2Cpreds_target%2Ccoef_2018_state_avg%2CPred%20SNAP%202018%2CEsriWorldGrayCanvas%2CSNAP2018_Preds!%2CFSSLTDED_2018!%2CSHELDED_2018!%2CVersaTiles%20Graybeard!&t=AnalyzeFoodInsecurity_final_web"
+        width="100%"
+        height="500"
+        style="border: 1px solid var(--clr-border); border-radius: var(--radius);"
+        allowfullscreen>
+      </iframe>
+      <p style="font-size:.85rem; color:var(--clr-muted); margin-top:.35rem;">
+        ↑ Click the upper right corner for full screen.
+      </p>
+
+      <!-- Leaflet Choropleth Map -->
+      <h2>Predicted SNAP Households by State (2018)</h2>
       <div id="project-map"></div>
       <p style="font-size:.85rem; color:var(--clr-muted); margin-top:-.5rem;">
-        ↑ Zoom and click features to explore. Replace the sample data in
-        <code>js/main.js</code> with your own GeoJSON layers.
+        ↑ Hover over a state to see predicted SNAP household counts.
       </p>
 
       <h2>Methodology</h2>
       <p>
-        Park polygons were sourced from OpenStreetMap via the Overpass API. Census
-        tract boundaries and demographic data came from the 2020 ACS 5-Year estimates.
-        A 400 m and 800 m pedestrian network buffer was generated for each park using
-        OSMNX in Python, then intersected with census tract geometries to calculate
-        population within walking distance.
+        Each dataset started with 40,000+ rows and 800 columns. Through correlation analysis, nullity assessment,
+        domain knowledge, and Python optimization scripts, the data was reduced to 33 columns and ~4,000 final records.
       </p>
       <ul>
-        <li>Fetched OSM park polygons using <code>osmnx.geometries_from_place()</code></li>
-        <li>Computed network buffers at 400 m and 800 m walk distances</li>
-        <li>Joined ACS demographic tables to tract geometries via FIPS code</li>
-        <li>Calculated park access score: % of tract population within 800 m of a park</li>
-        <li>Visualised results with Matplotlib and exported final map in QGIS</li>
+        <li>Downloaded SNAP household data from the <strong>USDA</strong> for 2007 and 2017</li>
+        <li>Performed nullity assessment and dropped columns with high missingness</li>
+        <li>Used correlation analysis and domain knowledge to reduce to 33 relevant features</li>
+        <li>Extracted and compared state-level data for <strong>New Mexico</strong> and <strong>Nebraska</strong></li>
+        <li>Built a <strong>Vote Ensemble</strong> model combining Random Forest, Gradient Boost, and Bagging Classifier</li>
+        <li>Achieved a <strong>95% cross-validation score</strong> on the final model</li>
+        <li>Visualized feature importances and state-level predictions using <strong>Matplotlib</strong> and <strong>Seaborn</strong></li>
+        <li>Mapped 2018 predictions spatially using <strong>QGIS</strong> and published as a webmap</li>
       </ul>
 
       <h2>Key Findings</h2>
       <p>
-        Tracts in the southern and eastern districts had the lowest park-access scores
-        (&lt; 20% of residents within 800 m), and these areas were also significantly
-        lower in median household income. The correlation between income quartile and
-        green-space access was 0.61 (Pearson's r), suggesting a strong equity gap.
+        Several surprising patterns emerged from the analysis:
       </p>
+      <ul>
+        <li>SNAP requesters typically had small households — one to two children maximum</li>
+        <li>Approximately <strong>50% were single mothers</strong> heading households</li>
+        <li>The top 4 biggest predictors of a household requesting SNAP were related to <strong>housing cost and stability</strong></li>
+        <li>New Mexico showed greater economic vulnerability than Nebraska across both years</li>
+        <li>2017 showed fewer working poor but more available assistance programs compared to 2007</li>
+      </ul>
 
       <!-- Screenshots -->
       <h2>Screenshots</h2>
       <div class="screenshot-grid">
-        <!--
-          Replace these src paths with your actual exported map images.
-          Put the images in the img/ folder.
-        -->
-        <img src="img/green-space-1.jpg" alt="Park access heat map"
-             onerror="this.src=''; this.alt='[Replace with your screenshot]'; this.style.background='#dbeafe'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.style.fontSize='.85rem'; this.style.color='#64748b';"
-             onclick="openLightbox(this.src)" />
-        <img src="img/green-space-2.jpg" alt="Demographic overlay"
-             onerror="this.src=''; this.alt='[Replace with your screenshot]'; this.style.background='#dbeafe';"
-             onclick="openLightbox(this.src)" />
-        <img src="img/green-space-3.jpg" alt="Final cartographic output"
-             onerror="this.src=''; this.alt='[Replace with your screenshot]'; this.style.background='#dbeafe';"
-             onclick="openLightbox(this.src)" />
+        <figure class="screenshot-figure">
+          <img src="img/snap-1.jpg" alt="SNAP feature importance chart"
+               onerror="this.src=''; this.alt='[Screenshot coming soon]'; this.style.background='#dbeafe';"
+               onclick="openLightbox(this.src)" />
+          <figcaption>↑ Click to enlarge — Feature importance from Random Forest model</figcaption>
+        </figure>
+        <figure class="screenshot-figure">
+          <img src="img/snap-2.jpg" alt="New Mexico vs Nebraska comparison"
+               onerror="this.src=''; this.alt='[Screenshot coming soon]'; this.style.background='#dbeafe';"
+               onclick="openLightbox(this.src)" />
+          <figcaption>↑ Click to enlarge — State-level comparison: New Mexico vs Nebraska</figcaption>
+        </figure>
+        <figure class="screenshot-figure">
+          <img src="img/snap-3.jpg" alt="Model performance metrics"
+               onerror="this.src=''; this.alt='[Screenshot coming soon]'; this.style.background='#dbeafe';"
+               onclick="openLightbox(this.src)" />
+          <figcaption>↑ Click to enlarge — Vote Ensemble model performance</figcaption>
+        </figure>
       </div>
 
     </div>
@@ -111,36 +137,32 @@
       <div class="sidebar-card">
         <h3>Tools Used</h3>
         <div class="tag-row">
-          <span class="tag">QGIS 3.x</span>
           <span class="tag">Python 3</span>
-          <span class="tag">GeoPandas</span>
-          <span class="tag">OSMNX</span>
+          <span class="tag">Pandas</span>
+          <span class="tag">Scikit-learn</span>
           <span class="tag">Matplotlib</span>
-          <span class="tag">PostGIS</span>
+          <span class="tag">Seaborn</span>
+          <span class="tag">Jupyter</span>
+          <span class="tag">QGIS</span>
         </div>
       </div>
 
       <div class="sidebar-card">
         <h3>Data Sources</h3>
-        <div class="tag-row">
-          <span class="tag">OpenStreetMap</span>
-          <span class="tag">US Census ACS</span>
-          <span class="tag">TIGER/Line</span>
+        <div class="sidebar-links">
+          <a href="https://www.fns.usda.gov/snap/quality-control-data-download" target="_blank">USDA SNAP Quality Control Data</a>
+          <a href="https://www.census.gov/" target="_blank">US Census Bureau</a>
         </div>
       </div>
 
       <div class="sidebar-card">
         <h3>Links</h3>
         <div class="sidebar-links">
-          <!-- Replace href values with your real URLs -->
-          <a href="https://github.com/yourusername/green-space" target="_blank">
+          <a href="https://github.com/a-barker/BootcampGIS" target="_blank">
             📁 View Code on GitHub
           </a>
-          <a href="img/green-space-report.pdf" target="_blank">
-            📄 Download Report (PDF)
-          </a>
-          <a href="img/green-space-data.zip" target="_blank">
-            🗂️ Download Data
+          <a href="https://melissa-anthony.com/help-in-a-snap" target="_blank">
+            🔗 Project Reference
           </a>
         </div>
       </div>
@@ -163,40 +185,49 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/main.js"></script>
   <script>
-    // ── Interactive Map Setup ──
-    // This initialises a Leaflet map centred on a sample city.
-    // Change the lat/lng and zoom to match your study area.
-    // Add your own GeoJSON layers below.
+    // ── Choropleth map: Predicted SNAP households by state (2018) ──
+    const map = L.map('project-map').setView([39, -96], 4);
 
-    const map = L.map('project-map').setView([39.401735,-104.910193], 12); // Castle Rock CO
-
-    // Base tile layer (OpenStreetMap)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
       maxZoom: 19
     }).addTo(map);
 
-    // ── Sample park marker — replace with real GeoJSON ──
-    // To load a GeoJSON file:
-    //   fetch('data/parks.geojson')
-    //     .then(r => r.json())
-    //     .then(data => L.geoJSON(data, { style: { color: '#22c55e', fillOpacity: .4 } }).addTo(map));
+    function getColor(val, max) {
+      const t = val / max;
+      if (t > 0.8) return '#7f0000';
+      if (t > 0.6) return '#d7301f';
+      if (t > 0.4) return '#ef6548';
+      if (t > 0.2) return '#fc8d59';
+      if (t > 0.1) return '#fdbb84';
+      return '#fdd49e';
+    }
 
-    const sampleParks = [
-      { name: "Central Park",        lat: 40.7851, lng: -73.9683 },
-      { name: "Prospect Park",       lat: 40.6602, lng: -73.9690 },
-      { name: "Riverside Park",      lat: 40.8017, lng: -73.9718 },
-    ];
+    fetch('data/SNAP2018Pred.geojson')
+      .then(r => r.json())
+      .then(data => {
+        const maxVal = Math.max(...data.features.map(f => f.properties.snapyes || 0));
 
-    sampleParks.forEach(p => {
-      L.circleMarker([p.lat, p.lng], {
-        radius: 10,
-        color: '#16a34a',
-        fillColor: '#22c55e',
-        fillOpacity: .6,
-        weight: 2
-      }).addTo(map).bindPopup(`<strong>${p.name}</strong><br>Sample park marker`);
-    });
+        const layer = L.geoJSON(data, {
+          style: feature => ({
+            fillColor: getColor(feature.properties.snapyes || 0, maxVal),
+            weight: 1,
+            color: '#fff',
+            fillOpacity: 0.75
+          }),
+          onEachFeature: (feature, layer) => {
+            const p = feature.properties;
+            layer.bindTooltip(
+              `<strong>${p.name}</strong><br>
+               Predicted SNAP: ${(p.snapyes || 0).toLocaleString()}<br>
+               Predicted Non-SNAP: ${(p.snapno || 0).toLocaleString()}`,
+              { sticky: true }
+            );
+          }
+        }).addTo(map);
+
+        map.fitBounds(layer.getBounds());
+      });
 
     // ── Lightbox helpers ──
     function openLightbox(src) {
