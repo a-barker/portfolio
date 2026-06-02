@@ -89,5 +89,4 @@ Install the "Live Server" extension, right-click `index.html` → Open with Live
 ## Contact
 
 **Email:** barker.a@gmail.com  
-**LinkedIn:** [linkedin.com/in/adam-barker-gis-analyst](https://linkedin.com/in/adam-barker-gis-analyst)  
-**GitHub:** [github.com/a-barker](https://github.com/a-barker)
+**LinkedIn:** [linkedin.com/in/adam-barker-gis-analyst](https://linkedin.com/in/adam-barker-gis-analyst)
