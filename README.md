@@ -1,8 +1,54 @@
-# GIS Portfolio — Adam Barker
+# Adam Barker — GIS Portfolio
 
-A clean, professional multi-page HTML portfolio for showcasing GIS projects.
+A personal GIS portfolio showcasing spatial analysis projects, geospatial workflows, and infrastructure mapping work.
 
-## Folder structure
+**Live site:** [a-barker.github.io/portfolio](https://a-barker.github.io/portfolio)
+
+---
+
+## About
+
+I'm a Systems Administrator turned GIS analyst, building geospatial workflows with ArcGIS Pro, ModelBuilder, and spatial analysis. This portfolio highlights projects that combine data integrity, repeatable processes, and scalable solutions.
+
+---
+
+## Projects
+
+### Capital Improvement Planning Dashboard — Castle Rock, CO
+A GIS-based Capital Improvement Planning dashboard built for Castle Rock, CO. Field technicians collect infrastructure condition data using Survey123 on mobile devices, submissions feed into ArcGIS Online, results are visualized in an Experience Builder dashboard, and data is exported to QGIS and published as a public webmap.
+
+**Tools:** ArcGIS Pro · ArcGIS Online · Survey123 · Experience Builder · QGIS  
+**Data:** Douglas County CO GIS · Town of Castle Rock Data Catalog · OpenStreetMap
+
+---
+
+### Las Vegas Residential Infill Potential Analysis
+A parcel-level analysis of residential development capacity in Clark County, Nevada. Built in ArcGIS Pro using ModelBuilder, integrating parcel, zoning, dwelling unit, and constraint datasets to identify where new housing could realistically be added within the existing city. Presented as a story map.
+
+**Tools:** ArcGIS Pro · ModelBuilder · Story Maps  
+**Data:** U.S. Census Tract · City of Las Vegas GeoCommons · Clark County GIS Management Office · City of Las Vegas Open Library
+
+---
+
+### SNAP Access Analysis *(in progress)*
+Using U.S. Census data to analyze SNAP access across geographic areas.
+
+**Tools:** QGIS · Python
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | HTML, CSS, JavaScript |
+| Mapping | Leaflet.js, QGIS Cloud |
+| Fonts | Inter, Merriweather (Google Fonts) |
+| Hosting | GitHub Pages |
+
+---
+
+## Folder Structure
 
 ```
 gis-portfolio/
@@ -22,61 +68,26 @@ gis-portfolio/
     └── ...
 ```
 
-## Running locally
+---
 
-Since this is plain HTML you have two easy options:
+## Running Locally
 
-**Option 1 — Python (recommended, already installed on most machines)**
+**Option 1 — Python**
 ```bash
 cd gis-portfolio
-python -m http.server 8000
-# Then open http://localhost:8000 in your browser
+python -m http.server 5500
+# Then open http://localhost:5500 in your browser
 ```
 
-**Option 2 — VS Code Live Server extension**
+**Option 2 — VS Code Live Server**  
 Install the "Live Server" extension, right-click `index.html` → Open with Live Server.
 
-> ⚠️ Don't just double-click index.html to open it — the Leaflet map and GeoJSON
-> fetch calls require a local server (file:// URLs block them).
+> ⚠️ Don't open `index.html` by double-clicking — the Leaflet map and GeoJSON fetch calls require a local server.
 
-## Adding a new project
+---
 
-1. Copy `project-green-space.html` → rename it (e.g. `project-flood.html`)
-2. Update the title, description, tags, map centre, and screenshot paths inside the file
-3. Add a new card to the `projects-grid` section in `index.html` pointing to the new page
+## Contact
 
-## Adding a Leaflet map to a project page
-
-In the `<script>` block at the bottom of any project page:
-
-```js
-// Change the centre coordinates and zoom for your study area
-const map = L.map('project-map').setView([LAT, LNG], ZOOM);
-
-// Load your own GeoJSON layer
-fetch('data/my-layer.geojson')
-  .then(r => r.json())
-  .then(data => {
-    L.geoJSON(data, {
-      style: { color: '#2563eb', fillOpacity: 0.4 }
-    }).addTo(map);
-  });
-```
-
-Put your `.geojson` files in a `data/` subfolder.
-
-## Customising
-
-| What                | Where                          |
-|---------------------|--------------------------------|
-| Name / bio          | `index.html` hero section      |
-| Skills badges       | `index.html` skills section    |
-| Contact links       | `index.html` contact section   |
-| Accent colour       | `css/style.css` → `--clr-accent` |
-| Font                | `css/style.css` → `--font`     |
-
-## Deploying publicly (free options)
-
-- **GitHub Pages** — push the folder to a repo, enable Pages in Settings
-- **Netlify** — drag the folder onto netlify.com/drop
-- **Vercel** — `npx vercel` in the folder (no build step needed for plain HTML)
+**Email:** barker.a@gmail.com  
+**LinkedIn:** [linkedin.com/in/adam-barker-gis-analyst](https://linkedin.com/in/adam-barker-gis-analyst)  
+**GitHub:** [github.com/a-barker](https://github.com/a-barker)
