@@ -6,15 +6,19 @@ A clean, professional multi-page HTML portfolio for showcasing GIS projects.
 
 ```
 gis-portfolio/
-├── index.html                  ← Home page (edit bio, skills, project cards here)
-├── project-green-space.html    ← Example project page (duplicate for each project)
+├── index.html                         ← Home page
+├── capital-improvement-project.html   ← CIP project page
+├── urban-infill.html                  ← Infill project page
+├── SNAP.html                          ← SNAP project page
 ├── css/
-│   └── style.css               ← All styles — edit colours/fonts here
+│   └── style.css                      ← All styles — edit colours/fonts here
 ├── js/
-│   └── main.js                 ← Shared JS (nav highlight etc.)
-└── img/                        ← Drop your screenshots and avatar here
-    ├── avatar.jpg              ← Your headshot (optional)
-    ├── green-space-1.jpg       ← Project screenshots
+│   └── main.js
+└── img/
+    ├── avatar.jpg                     ← My headshot
+    ├── CIP-1.jpg                      ← Project screenshots
+    ├── infill-1.jpg                   ← Project screenshots
+    ├── snap-1.jpg                     ← Project screenshots
     └── ...
 ```
 
