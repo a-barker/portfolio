@@ -189,7 +189,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/main.js"></script>
   <script>
-    // ── Choropleth map: Predicted SNAP households by state (2018) ──
+    // ── Choropleth map: SNAP 2018 layers ──
     const map = L.map('project-map').setView([38, -96], 4);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -207,48 +207,69 @@
       return '#f9e94e';
     }
 
-    fetch('data/SNAP2018Pred.geojson')
-      .then(r => r.json())
-      .then(data => {
-        const maxVal = Math.max(...data.features.map(f => f.properties.snapyes || 0));
-
-        const layer = L.geoJSON(data, {
-          style: feature => ({
-            fillColor: getColor(feature.properties.snapyes || 0, maxVal),
-            weight: 1,
-            color: '#fff',
-            fillOpacity: 0.75
-          }),
-          onEachFeature: (feature, layer) => {
-            const p = feature.properties;
-            layer.bindTooltip(
-              `<strong>${p.name}</strong><br>
-               Predicted SNAP: ${(p.snapyes || 0).toLocaleString()}<br>
-               Predicted Non-SNAP: ${(p.snapno || 0).toLocaleString()}`,
-              { sticky: true }
-            );
-          }
-        }).addTo(map);
-
-        // ── Legend ──
-        const legend = L.control({ position: 'bottomright' });
-        legend.onAdd = function () {
-          const div = L.DomUtil.create('div');
-          div.style.cssText = 'background:#fff;padding:10px 14px;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.2);font-size:.8rem;line-height:1.9;min-width:170px;';
-          div.innerHTML = `
-            <strong style="display:block;margin-bottom:4px;">Predicted SNAP Households</strong>
-            <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#3d1a6e;display:inline-block;border-radius:2px;"></i> Highest</span>
-            <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#6b3fa0;display:inline-block;border-radius:2px;"></i> High</span>
-            <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#2a9d8f;display:inline-block;border-radius:2px;"></i> Medium</span>
-            <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#57cc5a;display:inline-block;border-radius:2px;"></i> Low-Medium</span>
-            <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#a8e063;display:inline-block;border-radius:2px;"></i> Low</span>
-            <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#f9e94e;display:inline-block;border-radius:2px;"></i> Lowest</span>
-          `;
-          return div;
-        };
-        legend.addTo(map);
-
+    function makeLayer(data, field, tooltipFn) {
+      const maxVal = Math.max(...data.features.map(f => f.properties[field] || 0));
+      return L.geoJSON(data, {
+        style: feature => ({
+          fillColor: getColor(feature.properties[field] || 0, maxVal),
+          weight: 1,
+          color: '#fff',
+          fillOpacity: 0.75
+        }),
+        onEachFeature: (feature, layer) => {
+          layer.bindTooltip(tooltipFn(feature.properties), { sticky: true });
+        }
       });
+    }
+
+    const overlays = {};
+
+    Promise.all([
+      fetch('data/SNAP2018Pred.geojson').then(r => r.json()),
+      fetch('data/shelded_2018.geojson').then(r => r.json()),
+      fetch('data/fssltded_2018.geojson').then(r => r.json())
+    ]).then(([snapData, sheldedData, fssltdedData]) => {
+
+      const snapLayer = makeLayer(snapData, 'SNAPYes', p =>
+        `<strong>${p.NAME}</strong><br>Predicted SNAP: ${(p.SNAPYes || 0).toLocaleString()}<br>Predicted Non-SNAP: ${(p.SNAPNo || 0).toLocaleString()}`
+      );
+
+      const sheldedLayer = makeLayer(sheldedData, 'SNAPSHELDED', p =>
+        `<strong>${p.NAME}</strong><br>Shelter Deduction (SHELDED): ${(p.SNAPSHELDED || 0).toLocaleString()}`
+      );
+
+      const fssltdedLayer = makeLayer(fssltdedData, 'SNAPFSSLTDED', p =>
+        `<strong>${p.NAME}</strong><br>Self-Employment Deduction (FSSLTDED): ${(p.SNAPFSSLTDED || 0).toLocaleString()}`
+      );
+
+      // Add default layer
+      snapLayer.addTo(map);
+
+      // Layer control
+      L.control.layers(null, {
+        'Predicted SNAP Households': snapLayer,
+        'Shelter Deductions (SHELDED)': sheldedLayer,
+        'Self-Employment Deductions (FSSLTDED)': fssltdedLayer
+      }, { collapsed: false, position: 'topleft' }).addTo(map);
+
+      // ── Legend ──
+      const legend = L.control({ position: 'bottomright' });
+      legend.onAdd = function () {
+        const div = L.DomUtil.create('div');
+        div.style.cssText = 'background:#fff;padding:10px 14px;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.2);font-size:.8rem;line-height:1.9;min-width:170px;';
+        div.innerHTML = `
+          <strong style="display:block;margin-bottom:4px;">Scale</strong>
+          <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#3d1a6e;display:inline-block;border-radius:2px;"></i> Highest</span>
+          <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#6b3fa0;display:inline-block;border-radius:2px;"></i> High</span>
+          <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#2a9d8f;display:inline-block;border-radius:2px;"></i> Medium</span>
+          <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#57cc5a;display:inline-block;border-radius:2px;"></i> Low-Medium</span>
+          <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#a8e063;display:inline-block;border-radius:2px;"></i> Low</span>
+          <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#f9e94e;display:inline-block;border-radius:2px;"></i> Lowest</span>
+        `;
+        return div;
+      };
+      legend.addTo(map);
+    });
 
     // ── Lightbox helpers ──
     function openLightbox(src) {
