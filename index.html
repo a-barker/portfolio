@@ -44,9 +44,7 @@
       </div>
     </div>
     <div class="avatar-wrap">
-      <img class="avatar avatar-rotate active" src="img/avatar.jpg" alt="Adam Barker"
-           onerror="this.style.display='none'" />
-      <img class="avatar avatar-rotate" src="img/avatar-2.jpg" alt="Adam Barker"
+      <img class="avatar" src="img/avatar.jpg" alt="Adam Barker"
            onerror="this.style.display='none'" />
     </div>
   </div>
@@ -178,14 +176,5 @@
   </footer>
 
   <script src="js/main.js"></script>
-  <script>
-    const avatars = document.querySelectorAll('.avatar-rotate');
-    let current = 0;
-    setInterval(() => {
-      avatars[current].classList.remove('active');
-      current = (current + 1) % avatars.length;
-      avatars[current].classList.add('active');
-    }, 4000);
-  </script>
 </body>
 </html>
