@@ -70,8 +70,8 @@
         then collected condition data on mobile devices using <strong>Survey123</strong>, with
         submissions feeding directly into <strong>ArcGIS Online</strong>. Results were visualized
         in an <strong>Experience Builder</strong> dashboard for real-time infrastructure assessment
-        and decision-making. Data was then exported to <strong>QGIS</strong> and published as a
-        publicly accessible webmap.
+        and decision-making. Data was then exported to <strong>GeoJSON</strong> and displayed
+        interactively using <strong>Leaflet</strong>.
       </p>
       <ul>
         <li>Downloaded base data from <strong>Douglas County CO GIS</strong> and <strong>Town of Castle Rock Data Catalog</strong></li>
@@ -79,7 +79,7 @@
         <li>Field technicians collect infrastructure condition data using <strong>Survey123</strong> on mobile devices</li>
         <li>Submissions integrated into <strong>ArcGIS Online</strong> for spatial analysis and attribute standardization</li>
         <li>Results visualized in an <strong>Experience Builder</strong> dashboard for real-time decision-making</li>
-        <li>Data exported to <strong>QGIS</strong> and published as a publicly accessible webmap</li>
+        <li>Data exported to <strong>GeoJSON</strong> and displayed interactively using <strong>Leaflet</strong></li>
       </ul>
 
       <!-- QGIS map removed — will be replaced with Leaflet + GeoJSON -->
@@ -226,7 +226,13 @@
       .then(data => L.geoJSON(data, {
         style: { color: '#dc2626', weight: 1.5, fillColor: '#fca5a5', fillOpacity: 0.4 },
         onEachFeature: (feature, layer) => {
-          if (feature.properties) layer.bindTooltip(JSON.stringify(feature.properties), { sticky: true });
+          const p = feature.properties;
+          layer.bindTooltip(
+            `<strong>${p.name || 'CIP Survey'}</strong><br>
+             Org: ${p.organizati || '—'}<br>
+             Comment: ${p.comment || '—'}`,
+            { sticky: true }
+          );
         }
       }).addTo(map));
 
@@ -239,7 +245,15 @@
           radius: 8, color: '#ca8a04', fillColor: '#fde047', fillOpacity: 0.8, weight: 2
         }),
         onEachFeature: (feature, layer) => {
-          if (feature.properties) layer.bindTooltip(JSON.stringify(feature.properties), { sticky: true });
+          const p = feature.properties;
+          layer.bindTooltip(
+            `<strong>Safety Hazard</strong><br>
+             Severity: ${p['Safety_Hazard_Proj.Severity'] || '—'}<br>
+             Street: ${p['Safety_Hazard_Proj_AddSpatialJoin_1.STRNAME'] || '—'}<br>
+             Inspection: ${p['Safety_Hazard_Proj.Inspection_Date'] || '—'}<br>
+             Comment: ${p['Safety_Hazard_Proj.Comment'] || '—'}`,
+            { sticky: true }
+          );
         }
       }).addTo(map));
 
@@ -266,6 +280,25 @@
           radius: 6, color: '#ec4899', fillColor: '#f9a8d4', fillOpacity: 0.8, weight: 2
         })
       }).addTo(map));
+
+    // ── Legend ──
+    const legend = L.control({ position: 'bottomright' });
+    legend.onAdd = function () {
+      const div = L.DomUtil.create('div');
+      div.style.cssText = 'background:#fff;padding:10px 14px;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.2);font-size:.8rem;line-height:1.9;min-width:160px;';
+      div.innerHTML = `
+        <strong style="display:block;margin-bottom:4px;">CIP Layers</strong>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:3px;background:#2563eb;display:inline-block;"></i> Stream</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:3px;background:#00f5ff;display:inline-block;"></i> Reach 4 Stream</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:3px;background:#ec4899;display:inline-block;"></i> Trail</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#a855f7;opacity:.6;display:inline-block;border-radius:2px;border:1px solid #7e22ce;"></i> Building Outlines</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#fca5a5;opacity:.8;display:inline-block;border-radius:2px;border:1px solid #dc2626;"></i> CIP Survey</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:12px;height:12px;background:#fde047;display:inline-block;border-radius:50%;border:2px solid #ca8a04;"></i> Hazard</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:12px;height:12px;background:#22c55e;display:inline-block;border-radius:50%;border:2px solid #16a34a;"></i> Outfall</span>
+      `;
+      return div;
+    };
+    legend.addTo(map);
 
     // ── Lightbox helpers ──
     function openLightbox(src) {
