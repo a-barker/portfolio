@@ -175,7 +175,7 @@ nav {
 }
 .btn-outline:hover { background: var(--clr-tag-bg); text-decoration: none; }
 
-.avatar-wrap { position: relative; width: 160px; height: 160px; }
+.avatar-wrap { position: relative; width: 160px; height: 160px; margin-top: -60px; }
 
 .avatar {
   width: 160px;
