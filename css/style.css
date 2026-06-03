@@ -482,7 +482,7 @@ footer {
   .avatar { width: 100px; height: 100px; }
   .hero { gap: 1.5rem; }
   .hero-text { order: 2; }
-  .avatar-wrap { order: 1; }
+  .avatar-wrap { order: 1; margin-top: 0; }
   .project-body { grid-template-columns: 1fr; }
   .project-sidebar { position: static; }
 }
