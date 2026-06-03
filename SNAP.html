@@ -197,11 +197,11 @@
       maxZoom: 19
     }).addTo(map);
 
-    // ── Color palettes per layer ──
+    // ── Color palettes per layer (5 classes to match GIS legend) ──
     const palettes = {
-      snap:    ['#3d1a6e','#6b3fa0','#2a9d8f','#57cc5a','#a8e063','#f9e94e'], // purple → yellow
-      shelded: ['#08306b','#2171b5','#4292c6','#74c476','#bae4b3','#edf8e9'], // dark blue → light green
-      fssltded:['#7f0000','#d7301f','#ef6548','#fc8d59','#fdbb84','#fdd49e']  // dark red → light orange
+      snap:    ['#08306b','#2171b5','#4292c6','#9ecae1','#deebf7'], // dark navy → light blue
+      shelded: ['#3f007d','#6a51a3','#9e9ac8','#c7e9c0','#ffffcc'], // dark purple → light yellow
+      fssltded:['#7f0000','#d7301f','#ef6548','#fc8d59','#fdd49e']  // dark red → light orange
     };
 
     const legendInfo = {
@@ -216,8 +216,7 @@
       if (t > 0.6) return palette[1];
       if (t > 0.4) return palette[2];
       if (t > 0.2) return palette[3];
-      if (t > 0.1) return palette[4];
-      return palette[5];
+      return palette[4];
     }
 
     function makeLayer(data, field, palette, tooltipFn) {
@@ -243,9 +242,8 @@
         <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[0]};display:inline-block;border-radius:2px;"></i> Highest</span>
         <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[1]};display:inline-block;border-radius:2px;"></i> High</span>
         <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[2]};display:inline-block;border-radius:2px;"></i> Medium</span>
-        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[3]};display:inline-block;border-radius:2px;"></i> Low-Medium</span>
-        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[4]};display:inline-block;border-radius:2px;"></i> Low</span>
-        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[5]};display:inline-block;border-radius:2px;"></i> Lowest</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[3]};display:inline-block;border-radius:2px;"></i> Low</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[4]};display:inline-block;border-radius:2px;"></i> Lowest</span>
       `;
     }
 
