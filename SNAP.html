@@ -197,21 +197,34 @@
       maxZoom: 19
     }).addTo(map);
 
-    function getColor(val, max) {
+    // ── Color palettes per layer ──
+    const palettes = {
+      snap:    ['#3d1a6e','#6b3fa0','#2a9d8f','#57cc5a','#a8e063','#f9e94e'], // purple → yellow
+      shelded: ['#08306b','#2171b5','#4292c6','#74c476','#bae4b3','#edf8e9'], // dark blue → light green
+      fssltded:['#7f0000','#d7301f','#ef6548','#fc8d59','#fdbb84','#fdd49e']  // dark red → light orange
+    };
+
+    const legendInfo = {
+      snap:     { title: 'Predicted SNAP Households' },
+      shelded:  { title: 'Shelter Deductions (SHELDED)' },
+      fssltded: { title: 'Self-Employment Deductions (FSSLTDED)' }
+    };
+
+    function getColorFor(palette, val, max) {
       const t = val / max;
-      if (t > 0.8) return '#3d1a6e';
-      if (t > 0.6) return '#6b3fa0';
-      if (t > 0.4) return '#2a9d8f';
-      if (t > 0.2) return '#57cc5a';
-      if (t > 0.1) return '#a8e063';
-      return '#f9e94e';
+      if (t > 0.8) return palette[0];
+      if (t > 0.6) return palette[1];
+      if (t > 0.4) return palette[2];
+      if (t > 0.2) return palette[3];
+      if (t > 0.1) return palette[4];
+      return palette[5];
     }
 
-    function makeLayer(data, field, tooltipFn) {
+    function makeLayer(data, field, palette, tooltipFn) {
       const maxVal = Math.max(...data.features.map(f => f.properties[field] || 0));
       return L.geoJSON(data, {
         style: feature => ({
-          fillColor: getColor(feature.properties[field] || 0, maxVal),
+          fillColor: getColorFor(palette, feature.properties[field] || 0, maxVal),
           weight: 1,
           color: '#fff',
           fillOpacity: 0.75
@@ -222,7 +235,19 @@
       });
     }
 
-    const overlays = {};
+    function buildLegendHTML(key) {
+      const p = palettes[key];
+      const title = legendInfo[key].title;
+      return `
+        <strong style="display:block;margin-bottom:4px;">${title}</strong>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[0]};display:inline-block;border-radius:2px;"></i> Highest</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[1]};display:inline-block;border-radius:2px;"></i> High</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[2]};display:inline-block;border-radius:2px;"></i> Medium</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[3]};display:inline-block;border-radius:2px;"></i> Low-Medium</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[4]};display:inline-block;border-radius:2px;"></i> Low</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[5]};display:inline-block;border-radius:2px;"></i> Lowest</span>
+      `;
+    }
 
     Promise.all([
       fetch('data/SNAP2018Pred.geojson').then(r => r.json()),
@@ -230,45 +255,38 @@
       fetch('data/fssltded_2018.geojson').then(r => r.json())
     ]).then(([snapData, sheldedData, fssltdedData]) => {
 
-      const snapLayer = makeLayer(snapData, 'SNAPYes', p =>
-        `<strong>${p.NAME}</strong><br>Predicted SNAP: ${(p.SNAPYes || 0).toLocaleString()}<br>Predicted Non-SNAP: ${(p.SNAPNo || 0).toLocaleString()}`
-      );
+      const snapLayer     = makeLayer(snapData,     'SNAPYes',      palettes.snap,     p => `<strong>${p.NAME}</strong><br>Predicted SNAP: ${(p.SNAPYes||0).toLocaleString()}<br>Non-SNAP: ${(p.SNAPNo||0).toLocaleString()}`);
+      const sheldedLayer  = makeLayer(sheldedData,  'SNAPSHELDED',  palettes.shelded,  p => `<strong>${p.NAME}</strong><br>Shelter Deduction: ${(p.SNAPSHELDED||0).toLocaleString()}`);
+      const fssltdedLayer = makeLayer(fssltdedData, 'SNAPFSSLTDED', palettes.fssltded, p => `<strong>${p.NAME}</strong><br>Self-Employment Deduction: ${(p.SNAPFSSLTDED||0).toLocaleString()}`);
 
-      const sheldedLayer = makeLayer(sheldedData, 'SNAPSHELDED', p =>
-        `<strong>${p.NAME}</strong><br>Shelter Deduction (SHELDED): ${(p.SNAPSHELDED || 0).toLocaleString()}`
-      );
+      const layerMap = {
+        'Predicted SNAP Households': { layer: snapLayer, key: 'snap' },
+        'Shelter Deductions (SHELDED)': { layer: sheldedLayer, key: 'shelded' },
+        'Self-Employment Deductions (FSSLTDED)': { layer: fssltdedLayer, key: 'fssltded' }
+      };
 
-      const fssltdedLayer = makeLayer(fssltdedData, 'SNAPFSSLTDED', p =>
-        `<strong>${p.NAME}</strong><br>Self-Employment Deduction (FSSLTDED): ${(p.SNAPFSSLTDED || 0).toLocaleString()}`
-      );
-
-      // Add default layer
       snapLayer.addTo(map);
 
-      // Layer control
-      L.control.layers(null, {
-        'Predicted SNAP Households': snapLayer,
-        'Shelter Deductions (SHELDED)': sheldedLayer,
-        'Self-Employment Deductions (FSSLTDED)': fssltdedLayer
-      }, { collapsed: false, position: 'topleft' }).addTo(map);
+      const overlayObj = {};
+      Object.entries(layerMap).forEach(([name, {layer}]) => overlayObj[name] = layer);
+      L.control.layers(null, overlayObj, { collapsed: false, position: 'topleft' }).addTo(map);
 
-      // ── Legend ──
+      // ── Dynamic legend ──
       const legend = L.control({ position: 'bottomright' });
+      let legendDiv;
       legend.onAdd = function () {
-        const div = L.DomUtil.create('div');
-        div.style.cssText = 'background:#fff;padding:10px 14px;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.2);font-size:.8rem;line-height:1.9;min-width:170px;';
-        div.innerHTML = `
-          <strong style="display:block;margin-bottom:4px;">Scale</strong>
-          <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#3d1a6e;display:inline-block;border-radius:2px;"></i> Highest</span>
-          <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#6b3fa0;display:inline-block;border-radius:2px;"></i> High</span>
-          <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#2a9d8f;display:inline-block;border-radius:2px;"></i> Medium</span>
-          <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#57cc5a;display:inline-block;border-radius:2px;"></i> Low-Medium</span>
-          <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#a8e063;display:inline-block;border-radius:2px;"></i> Low</span>
-          <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#f9e94e;display:inline-block;border-radius:2px;"></i> Lowest</span>
-        `;
-        return div;
+        legendDiv = L.DomUtil.create('div');
+        legendDiv.style.cssText = 'background:#fff;padding:10px 14px;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.2);font-size:.8rem;line-height:1.9;min-width:190px;';
+        legendDiv.innerHTML = buildLegendHTML('snap');
+        return legendDiv;
       };
       legend.addTo(map);
+
+      // Update legend when layers toggled
+      map.on('overlayadd overlayremove', function () {
+        const active = Object.entries(layerMap).find(([name, {layer}]) => map.hasLayer(layer));
+        if (active && legendDiv) legendDiv.innerHTML = buildLegendHTML(active[1].key);
+      });
     });
 
     // ── Lightbox helpers ──
