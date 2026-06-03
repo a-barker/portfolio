@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SNAP Benefit Risk Analysis — Adam Barker</title>
+  <title>Food Insecurity in America: Help in a SNAP — Adam Barker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- Leaflet CSS -->
@@ -34,9 +34,9 @@
       <span class="tag">Pandas</span>
       <span class="tag">GitHub</span>
     </div>
-    <h1>SNAP Benefit Risk Analysis</h1>
+    <h1>Food Insecurity in America: Help in a SNAP</h1>
     <p style="color:var(--clr-muted); margin-top:.5rem;">
-      Identifying the characteristics of food-insecure households to direct support where it is most needed during periods of financial stress.
+      Which communities are at risk for food insecurity during COVID? A predictive model to determine areas at risk.
     </p>
   </div>
 
@@ -48,30 +48,39 @@
 
       <h2>Overview</h2>
       <p>
-        SNAP (formerly Food Stamps) is a critical lifeline for households that struggle to cover grocery costs.
+        SNAP (formerly Food Stamps) is a critical lifeline for households struggling to cover grocery costs.
         Economic downturns hit certain communities harder — and those same communities tend to recover more slowly.
-        This project assessed demographics vulnerable to food insecurity using SNAP data from the USDA,
-        conducting a 10-year gap analysis comparing 2007 and 2017 datasets to examine the lasting impacts of the 2008 housing crisis.
+        This project assessed demographics vulnerable to food insecurity using SNAP Quality Control data from the USDA,
+        conducting a 10-year gap analysis comparing 2007 and 2017 datasets to examine lasting impacts on vulnerable communities.
       </p>
       <p>
-        The analysis focused on two contrasting states identified through prior GIS spatial analysis:
-        <strong>New Mexico</strong> (an emerging hot spot) and <strong>Nebraska</strong> (an emerging cold spot).
+        Using an ArcGIS spatial analysis MOOC, two contrasting counties were identified as study areas:
+        <strong>San Juan County, New Mexico</strong> (an emerging hot spot) and
+        <strong>Cherry County, Nebraska</strong> (an emerging cold spot). The target variable was
+        <strong>CAT_ELIG</strong> — whether a household was eligible (1) or not eligible (0) for SNAP benefits.
       </p>
+
+      <figure class="screenshot-figure">
+        <img src="img/snap-4.jpg" alt="GIS hot and cold spot analysis"
+             onerror="this.src=''; this.alt='[Screenshot coming soon]'; this.style.background='#dbeafe';"
+             onclick="openLightbox(this.src)" />
+        <figcaption>↑ Click to enlarge — Hot and cold spots identified via ArcGIS spatial analysis</figcaption>
+      </figure>
 
       <h2>Methodology</h2>
       <p>
-        Each dataset started with 40,000+ rows and 800 columns. Through correlation analysis, nullity assessment,
-        domain knowledge, and Python optimization scripts, the data was reduced to 33 columns and ~4,000 final records.
+        Each dataset started with 400,000+ records and 800 features. Through nullity assessment,
+        correlation analysis, and domain knowledge, the data was reduced to 32 features and ~4,000 final records.
       </p>
       <ul>
-        <li>Downloaded SNAP household data from the <strong>USDA</strong> for 2007 and 2017</li>
-        <li>Performed nullity assessment and dropped columns with high missingness</li>
-        <li>Used correlation analysis and domain knowledge to reduce to 33 relevant features</li>
-        <li>Extracted and compared state-level data for <strong>New Mexico</strong> and <strong>Nebraska</strong></li>
+        <li>Downloaded SNAP Quality Control data from the <strong>USDA</strong> for 2007 and 2017</li>
+        <li>Removed columns with all null values, then dropped columns with more than 50% nulls</li>
+        <li>Imputed remaining nulls with the mean using <strong>sklearn SimpleImputer</strong></li>
+        <li>Used correlation analysis on 2007 data to select top 5 features per section — 32 final features</li>
+        <li>Extracted and compared county-level data for <strong>San Juan County, NM</strong> and <strong>Cherry County, NE</strong></li>
         <li>Built a <strong>Vote Ensemble</strong> model combining Random Forest, Gradient Boost, and Bagging Classifier</li>
         <li>Achieved a <strong>95% cross-validation score</strong> on the final model</li>
         <li>Visualized feature importances and state-level predictions using <strong>Matplotlib</strong> and <strong>Seaborn</strong></li>
-        <li>Mapped 2018 predictions spatially using <strong>QGIS</strong> and published as a webmap</li>
       </ul>
 
       <figure class="screenshot-figure">
@@ -90,14 +99,15 @@
 
       <h2>Key Findings</h2>
       <p>
-        Several surprising patterns emerged from the analysis:
+        Several patterns emerged from the analysis:
       </p>
       <ul>
         <li>SNAP requesters typically had small households — one to two children maximum</li>
         <li>Approximately <strong>50% were single mothers</strong> heading households</li>
-        <li>The top 4 biggest predictors of a household requesting SNAP were related to <strong>housing cost and stability</strong></li>
-        <li>New Mexico showed greater economic vulnerability than Nebraska across both years</li>
-        <li>2017 showed fewer working poor but more available assistance programs compared to 2007</li>
+        <li>The top 4 predictors were all related to <strong>shelter and housing costs</strong>: FSSLTDED, SHELDED, FSTOTDED, and FSSTDDE2</li>
+        <li>New Mexico saw ~100 fewer working poor on SNAP in 2017; Nebraska saw ~50 more</li>
+        <li>In 2007, SNAP recipients received less assistance from other welfare programs than in 2017</li>
+        <li><strong>San Juan County, NM</strong> showed greater economic vulnerability than Cherry County, NE across both years</li>
       </ul>
 
       <figure class="screenshot-figure">
@@ -107,8 +117,17 @@
         <figcaption>↑ Click to enlarge — State-level comparison: New Mexico vs Nebraska</figcaption>
       </figure>
 
+      <figure class="screenshot-figure">
+        <img src="img/snap-5.jpg" alt="Model coefficients and shelter variables"
+             onerror="this.src=''; this.alt='[Screenshot coming soon]'; this.style.background='#dbeafe';"
+             onclick="openLightbox(this.src)" />
+        <figcaption>↑ Click to enlarge — Model coefficients: top predictors related to shelter and housing</figcaption>
+      </figure>
+
       <!-- Leaflet Choropleth Map -->
       <h2>Predicted SNAP Households by State (2018)</h2>
+      <p>The original project identified a next step: building an interactive geographic dashboard to pinpoint
+        high-need areas. The map below realizes that goal — 2018 SNAP household predictions visualized at the state level.</p>
       <div id="project-map"></div>
       <p style="font-size:.85rem; color:var(--clr-muted); margin-top:-.5rem;">
         ↑ Hover over a state to see predicted SNAP household counts.
