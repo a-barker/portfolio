@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.fullscreen@3.0.2/Control.FullScreen.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -183,6 +184,7 @@
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.fullscreen@3.0.2/Control.FullScreen.js"></script>
   <script src="js/main.js"></script>
   <script>
     // ── Interactive Map Setup ──
@@ -271,6 +273,26 @@
         style: { color: '#00f5ff', weight: 2.5, fillOpacity: 0 }
       }).addTo(map));
 
+    // ── Erosion (bright red) ──
+    fetch('data/Erosion.geojson')
+      .then(r => r.json())
+      .then(data => L.geoJSON(data, {
+        style: { color: '#ff0000', weight: 3, fillOpacity: 0 },
+        onEachFeature: (feature, layer) => {
+          const p = feature.properties;
+          layer.bindTooltip(
+            `<strong>Erosion</strong><br>
+             Severity: ${p['Erosion_a_Proj.Severity'] || '—'}<br>
+             Street: ${p['Erosion_a_Proj_AddSpatialJoin.STRNAME'] || '—'}<br>
+             Length: ${p['Erosion_a_Proj.Length'] || '—'}<br>
+             Height: ${p['Erosion_a_Proj.Height'] || '—'}<br>
+             Inspection: ${p['Erosion_a_Proj.InspectDate'] || '—'}<br>
+             Comment: ${p['Erosion_a_Proj.Comment'] || '—'}`,
+            { sticky: true }
+          );
+        }
+      }).addTo(map));
+
     // ── Trail (pink) ──
     fetch('data/trail.geojson')
       .then(r => r.json())
@@ -291,6 +313,7 @@
         <span style="display:flex;align-items:center;gap:8px;"><i style="width:12px;height:12px;background:#22c55e;display:inline-block;border-radius:50%;border:2px solid #16a34a;"></i> Outfall</span>
         <span style="display:flex;align-items:center;gap:8px;"><i style="width:12px;height:12px;background:#fde047;display:inline-block;border-radius:50%;border:2px solid #ca8a04;"></i> Hazard</span>
         <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#a855f7;opacity:.6;display:inline-block;border-radius:2px;border:1px solid #7e22ce;"></i> Building Outlines</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:3px;background:#ff0000;display:inline-block;"></i> Erosion</span>
         <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:3px;background:#ec4899;display:inline-block;"></i> Trail</span>
         <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:3px;background:#2563eb;display:inline-block;"></i> Stream</span>
         <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:3px;background:#00f5ff;display:inline-block;"></i> Local Stream</span>
