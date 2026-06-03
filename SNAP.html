@@ -197,33 +197,48 @@
       maxZoom: 19
     }).addTo(map);
 
-    // ── Color palettes per layer (5 classes to match GIS legend) ──
-    const palettes = {
-      snap:    ['#08306b','#2171b5','#4292c6','#9ecae1','#deebf7'], // dark navy → light blue
-      shelded: ['#3f007d','#6a51a3','#9e9ac8','#c7e9c0','#ffffcc'], // dark purple → light yellow
-      fssltded:['#7f0000','#d7301f','#ef6548','#fc8d59','#fdd49e']  // dark red → light orange
+    // ── Layer definitions: exact colors + breaks + labels ──
+    const layerDefs = {
+      snap: {
+        title: 'Predicted SNAP Households',
+        classes: [
+          { label: 'Over 800',  color: '#ca0020' },
+          { label: '700 - 799', color: '#f4a582' },
+          { label: '600 - 699', color: '#f7f4e3' },
+          { label: '500 - 599', color: '#92c5de' },
+          { label: 'Under 500', color: '#0571b0' }
+        ],
+        colorFn: v => v > 800 ? '#ca0020' : v > 700 ? '#f4a582' : v > 600 ? '#f7f4e3' : v > 500 ? '#92c5de' : '#0571b0'
+      },
+      shelded: {
+        title: 'Shelter Deductions (SHELDED)',
+        classes: [
+          { label: 'Over 500',  color: '#48186a' },
+          { label: '400 - 499', color: '#472b7b' },
+          { label: '300 - 399', color: '#297a8e' },
+          { label: '200 - 299', color: '#6bcd5a' },
+          { label: 'Under 200', color: '#fde725' }
+        ],
+        colorFn: v => v > 500 ? '#48186a' : v > 400 ? '#472b7b' : v > 300 ? '#297a8e' : v > 200 ? '#6bcd5a' : '#fde725'
+      },
+      fssltded: {
+        title: 'Self-Employment Deductions (FSSLTDED)',
+        classes: [
+          { label: 'Over 500',  color: '#b30000' },
+          { label: '400 - 499', color: '#e34a33' },
+          { label: '300 - 399', color: '#fc8d59' },
+          { label: '200 - 299', color: '#fdcc8a' },
+          { label: 'Under 200', color: '#fef0d9' }
+        ],
+        colorFn: v => v > 500 ? '#b30000' : v > 400 ? '#e34a33' : v > 300 ? '#fc8d59' : v > 200 ? '#fdcc8a' : '#fef0d9'
+      }
     };
 
-    const legendInfo = {
-      snap:     { title: 'Predicted SNAP Households' },
-      shelded:  { title: 'Shelter Deductions (SHELDED)' },
-      fssltded: { title: 'Self-Employment Deductions (FSSLTDED)' }
-    };
-
-    function getColorFor(palette, val, max) {
-      const t = val / max;
-      if (t > 0.8) return palette[0];
-      if (t > 0.6) return palette[1];
-      if (t > 0.4) return palette[2];
-      if (t > 0.2) return palette[3];
-      return palette[4];
-    }
-
-    function makeLayer(data, field, palette, tooltipFn) {
-      const maxVal = Math.max(...data.features.map(f => f.properties[field] || 0));
+    function makeLayer(data, field, defKey, tooltipFn) {
+      const def = layerDefs[defKey];
       return L.geoJSON(data, {
         style: feature => ({
-          fillColor: getColorFor(palette, feature.properties[field] || 0, maxVal),
+          fillColor: def.colorFn(feature.properties[field] || 0),
           weight: 1,
           color: '#fff',
           fillOpacity: 0.75
@@ -235,15 +250,14 @@
     }
 
     function buildLegendHTML(key) {
-      const p = palettes[key];
-      const title = legendInfo[key].title;
+      const def = layerDefs[key];
       return `
-        <strong style="display:block;margin-bottom:4px;">${title}</strong>
-        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[0]};display:inline-block;border-radius:2px;"></i> Highest</span>
-        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[1]};display:inline-block;border-radius:2px;"></i> High</span>
-        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[2]};display:inline-block;border-radius:2px;"></i> Medium</span>
-        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[3]};display:inline-block;border-radius:2px;"></i> Low</span>
-        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:${p[4]};display:inline-block;border-radius:2px;"></i> Lowest</span>
+        <strong style="display:block;margin-bottom:6px;">${def.title}</strong>
+        ${def.classes.map(c => `
+          <span style="display:flex;align-items:center;gap:8px;">
+            <i style="width:16px;height:16px;background:${c.color};display:inline-block;border-radius:2px;border:1px solid #ccc;"></i>
+            ${c.label}
+          </span>`).join('')}
       `;
     }
 
@@ -253,9 +267,9 @@
       fetch('data/fssltded_2018.geojson').then(r => r.json())
     ]).then(([snapData, sheldedData, fssltdedData]) => {
 
-      const snapLayer     = makeLayer(snapData,     'SNAPYes',      palettes.snap,     p => `<strong>${p.NAME}</strong><br>Predicted SNAP: ${(p.SNAPYes||0).toLocaleString()}<br>Non-SNAP: ${(p.SNAPNo||0).toLocaleString()}`);
-      const sheldedLayer  = makeLayer(sheldedData,  'SNAPSHELDED',  palettes.shelded,  p => `<strong>${p.NAME}</strong><br>Shelter Deduction: ${(p.SNAPSHELDED||0).toLocaleString()}`);
-      const fssltdedLayer = makeLayer(fssltdedData, 'SNAPFSSLTDED', palettes.fssltded, p => `<strong>${p.NAME}</strong><br>Self-Employment Deduction: ${(p.SNAPFSSLTDED||0).toLocaleString()}`);
+      const snapLayer     = makeLayer(snapData,     'SNAPYes',      'snap',     p => `<strong>${p.NAME}</strong><br>Predicted SNAP: ${(p.SNAPYes||0).toLocaleString()}<br>Non-SNAP: ${(p.SNAPNo||0).toLocaleString()}`);
+      const sheldedLayer  = makeLayer(sheldedData,  'SNAPSHELDED',  'shelded',  p => `<strong>${p.NAME}</strong><br>Shelter Deduction: ${(p.SNAPSHELDED||0).toLocaleString()}`);
+      const fssltdedLayer = makeLayer(fssltdedData, 'SNAPFSSLTDED', 'fssltded', p => `<strong>${p.NAME}</strong><br>Self-Employment Deduction: ${(p.SNAPFSSLTDED||0).toLocaleString()}`);
 
       const layerMap = {
         'Predicted SNAP Households': { layer: snapLayer, key: 'snap' },
