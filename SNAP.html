@@ -230,6 +230,24 @@
           }
         }).addTo(map);
 
+        // ── Legend ──
+        const legend = L.control({ position: 'bottomright' });
+        legend.onAdd = function () {
+          const div = L.DomUtil.create('div');
+          div.style.cssText = 'background:#fff;padding:10px 14px;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.2);font-size:.8rem;line-height:1.9;min-width:170px;';
+          div.innerHTML = `
+            <strong style="display:block;margin-bottom:4px;">Predicted SNAP Households</strong>
+            <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#3d1a6e;display:inline-block;border-radius:2px;"></i> Highest</span>
+            <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#6b3fa0;display:inline-block;border-radius:2px;"></i> High</span>
+            <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#2a9d8f;display:inline-block;border-radius:2px;"></i> Medium</span>
+            <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#57cc5a;display:inline-block;border-radius:2px;"></i> Low-Medium</span>
+            <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#a8e063;display:inline-block;border-radius:2px;"></i> Low</span>
+            <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:16px;background:#f9e94e;display:inline-block;border-radius:2px;"></i> Lowest</span>
+          `;
+          return div;
+        };
+        legend.addTo(map);
+
       });
 
     // ── Lightbox helpers ──
