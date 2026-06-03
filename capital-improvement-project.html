@@ -9,6 +9,7 @@
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.fullscreen@3.0.2/Control.FullScreen.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.fullscreen@3.0.2/Control.FullScreen.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -192,7 +193,7 @@
     // Change the lat/lng and zoom to match your study area.
     // Add your own GeoJSON layers below.
 
-    const map = L.map('project-map').setView([39.401735,-104.910193], 12); // Castle Rock CO
+    const map = L.map('project-map', { fullscreenControl: true }).setView([39.401735,-104.910193], 12); // Castle Rock CO
 
     // Base tile layer (OpenStreetMap)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
