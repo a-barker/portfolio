@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Where Wildfire Could Burn in San Diego County — Adam Barker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.fullscreen@3.0.2/Control.FullScreen.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: .9rem; }
+    th { background: var(--clr-tag-bg); color: var(--clr-tag-txt); font-weight: 700; text-align: left; padding: .5rem .75rem; }
+    td { padding: .45rem .75rem; border-bottom: 1px solid var(--clr-border); color: var(--clr-muted); }
+    tr:last-child td { border-bottom: none; }
+    td strong { color: var(--clr-text); }
+  </style>
+</head>
+<body>
+
+  <!-- ── Nav ── -->
+  <nav>
+    <div class="nav-inner">
+      <a class="nav-logo" href="index.html">Adam Barker</a>
+      <ul class="nav-links">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#projects">Projects</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── Project Header ── -->
+  <div class="project-header">
+    <a class="back-link" href="index.html#projects">← All Projects</a>
+    <div class="project-meta">
+      <span class="tag">ArcGIS Pro</span>
+      <span class="tag">Python</span>
+      <span class="tag">Spatial Analyst</span>
+      <span class="tag">Remote Sensing</span>
+      <span class="tag">Story Maps</span>
+    </div>
+    <h1>Where Wildfire Could Burn in San Diego County</h1>
+    <p style="color:var(--clr-muted); margin-top:.5rem;">
+      A 30-meter wildfire susceptibility model for San Diego County, built end to end in the Esri
+      stack, covering 75 years of fire history, a burn-severity case study, a validated risk
+      surface, and a mid-century climate projection.
+    </p>
+  </div>
+
+  <!-- ── Project Body ── -->
+  <div class="project-body">
+
+    <div class="project-content">
+
+      <h2>The Question</h2>
+      <p>
+        California's statutory Fire Hazard Severity Zones (FHSZ) cover about 70% of San Diego
+        County. Where they apply, are they capturing the right ground, and what, if anything, is
+        happening on the 30% they don't cover? This project builds an independent, transparent
+        susceptibility model from public data, checks it against the state's own product, and asks
+        how both mid-century warming and a single well-documented fire (Valley Fire, 2020)
+        stress-test the result.
+      </p>
+      <p>
+        <strong>The headline result: 30.2% of the county (825,811 acres) scores High or Very High
+        susceptibility.</strong> The full interactive application is published as an ArcGIS StoryMap:
+        <a href="https://storymaps.arcgis.com/stories/78eee37ac84f4439a5a24a69b0358723" target="_blank">Read the interactive story →</a>
+      </p>
+
+      <!-- Study area map -->
+      <h2>Study Area</h2>
+      <div id="project-map"></div>
+      <p style="font-size:.85rem; color:var(--clr-muted); margin-top:-.5rem;">
+        ↑ San Diego County study area. Everything runs on one grid: NAD83 California Albers
+        (EPSG 3310), 30 meters, 4,884 × 3,578 cells, 12,282,657 of them inside the county.
+      </p>
+
+      <h2>Data</h2>
+      <table>
+        <thead>
+          <tr><th>Source</th><th>Used for</th><th>Vintage</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>LANDFIRE 2025 FBFM40 (USGS/USFS)</td><td>Fuel model</td><td>2025, current-state</td></tr>
+          <tr><td>USGS 3DEP</td><td>Elevation → slope, aspect</td><td>Service current</td></tr>
+          <tr><td>SanGIS</td><td>Road network (proxy for ignition access)</td><td>2026-08-24 pull</td></tr>
+          <tr><td>CAL FIRE FRAP</td><td>Fire perimeters, 1950–2025</td><td>Pinned pre-firep25_1 release</td></tr>
+          <tr><td>CAL FIRE FHSZ</td><td>Statutory hazard zones (validation target)</td><td>Adopted April 2025</td></tr>
+          <tr><td>MTBS + Copernicus Sentinel-2</td><td>Burn severity, Valley Fire 2020</td><td>Extended vs. immediate assessment</td></tr>
+          <tr><td>Cal-Adapt (4-model GCM ensemble)</td><td>Mid-century climate modifier</td><td>4th CA Climate Change Assessment, CMIP5</td></tr>
+          <tr><td>SANDAG Subregional Areas</td><td>41 community boundaries</td><td>2020 cycle</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Method</h2>
+      <p>
+        Five input layers were reclassified to a common 1–5 scale and combined using a weighted
+        sum (not ArcGIS's Weighted Overlay tool, which rounds to integers and mean-reverted the
+        first attempt into a surface with zero Very High cells).
+      </p>
+      <ul>
+        <li><strong>Fuel model — 35%</strong>: the necessary condition for fire, and the best-sourced input.</li>
+        <li><strong>Slope — 25%</strong>: Rothermel's slope factor scales with the <em>square</em> of slope, a published functional form.</li>
+        <li><strong>Distance to road — 15%</strong>: ~95% of California ignitions are human-caused, so proximity proxies for where people ignite.</li>
+        <li><strong>Aspect — 15%</strong>: solar loading acts indirectly, through fuel moisture.</li>
+        <li><strong>Burn frequency — 10%</strong>: lowest weight, because LANDFIRE already partly encodes recent burns as changed fuel.</li>
+      </ul>
+      <p>
+        The model was validated against FHSZ using conditional distributions, not a single agreement
+        statistic. Mean modeled susceptibility by FHSZ class is monotonic: Moderate 2.02 → High
+        2.62 → Very High 3.14. Climate was applied as a bounded modifier using a Cal-Adapt
+        4-model GCM ensemble (RCP 8.5 primary, RCP 4.5 comparison; 2035–2064 vs. 1985–2014),
+        adjusting the existing 30 m surface rather than replacing it.
+      </p>
+
+      <h2>Findings</h2>
+
+      <h3 style="font-size:1rem; font-weight:700; margin: 1.25rem 0 .5rem;">The Historical Record (1950–2025)</h3>
+      <p>
+        Since 1950, <strong>46% of the county (1,247,928 acres) has burned at least once</strong>
+        — not 72%, which is what naive summation of overlapping fire perimeters gives (reburn
+        inflation factor: 1.66×). More fires does not mean more fire: the 1980s had the most
+        ignitions of any decade (251) but burned only 7.8% of the total area, while the 2000s
+        had 43% fewer fires and burned 41.8%. Mean fire size has collapsed:
+        <strong>6,112 acres in the 2000s, 840 in the 2010s (a 7× drop), 427 so far in the
+        2020s</strong>, while the 2020s simultaneously carry the second-highest ignition rate on
+        record. Five years carry 54% of everything burned since 1950.
+      </p>
+
+      <h3 style="font-size:1rem; font-weight:700; margin: 1.25rem 0 .5rem;">The Susceptibility Surface</h3>
+      <p><strong>30.2% of the county scores High or Very High combined (825,811 acres).</strong>
+      The Very High class alone is 49,632 acres, roughly three times the size of the 2020 Valley Fire.</p>
+      <table>
+        <thead>
+          <tr><th>Class</th><th>Share</th><th>Acres</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Very Low</td><td>11.4%</td><td>311,927</td></tr>
+          <tr><td>Low</td><td>28.1%</td><td>767,801</td></tr>
+          <tr><td>Moderate</td><td>30.2%</td><td>826,060</td></tr>
+          <tr><td>High</td><td>28.4%</td><td>776,179</td></tr>
+          <tr><td><strong>Very High</strong></td><td><strong>1.8%</strong></td><td><strong>49,632</strong></td></tr>
+        </tbody>
+      </table>
+      <p>
+        Where this model and FHSZ can be compared, they agree strikingly at the top of the scale:
+        <strong>99.6% of modeled Very High sits inside FHSZ Very High</strong>, and 94.3% of
+        modeled High does too. But <strong>398,874 acres of modeled High-or-Very-High land sit on
+        ground the state's hazard maps do not classify at all</strong> — Federal Responsibility
+        Area (Cleveland National Forest, Camp Pendleton, BLM parcels, tribal trust land) that
+        FHSZ isn't built to cover. Only 45.2% of modeled Very High falls inside an FHSZ polygon
+        at all.
+      </p>
+
+      <h3 style="font-size:1rem; font-weight:700; margin: 1.25rem 0 .5rem;">One Fire, Up Close: the Valley Fire, September 2020</h3>
+      <p>
+        The registered prediction was half right, and the half that failed is the more useful half.
+        The immediate post-fire assessment read systematically higher than MTBS's extended
+        assessment: <strong>mean dNBR 0.431 vs. 0.235, a difference of +0.196, higher in 95.6%
+        of 73,667 co-registered cells</strong>, with spatial patterns correlating at 0.79. But the
+        divergence was <em>not</em> concentrated in resprouting shrubland as predicted — the gap
+        varies by only about 0.01 across fuel families covering 91% of the burn. The higher
+        immediate reading is real; why it's uniform rather than concentrated is left open rather
+        than guessed.
+      </p>
+
+      <h3 style="font-size:1rem; font-weight:700; margin: 1.25rem 0 .5rem;">A Warming County, Unevenly</h3>
+      <p>
+        <strong>Mid-century hazard moves inland and upslope.</strong> Nine of 41 communities show
+        higher susceptibility by 2035–2064 under RCP 8.5 — every one inland or backcountry, and
+        six already sit in the county's seven most hazardous places today. Countywide, modeled
+        area burned rises 3.53% under RCP 8.5 and 0.60% under RCP 4.5. The four climate models
+        agree on the <em>direction</em> of change in only 44.0% of cells, and 10.2% of the county
+        (279,725 acres) has no projection at all, left blank rather than interpolated across.
+      </p>
+
+      <!-- Screenshots -->
+      <h2>Screenshots</h2>
+      <div class="screenshot-grid">
+        <figure class="screenshot-figure">
+          <img src="img/thumbnail-4.jpg" alt="Wildfire susceptibility surface, San Diego County"
+               onerror="this.style.background='#dbeafe';"
+               onclick="openLightbox(this.src)" />
+          <figcaption>↑ Click to enlarge — 30 m susceptibility surface, San Diego County</figcaption>
+        </figure>
+      </div>
+
+      <h2>Limitations</h2>
+      <ul>
+        <li><strong>No weather.</strong> No wind, humidity, or fuel moisture. Santa Ana winds are the single largest driver of catastrophic fire here, and this is a susceptibility surface, not a fire-behavior simulation.</li>
+        <li><strong>No suppression access.</strong> The model scores "close to road" as high because that's where people start fires — it can't represent the opposite effect where remote terrain lets a fire grow longer before response.</li>
+        <li><strong>Ignition is a proxy, not a measurement.</strong> Road proximity stands in for human ignition; a direct ignition-density layer would be a better input.</li>
+        <li><strong>Road distances are biased near the county line</strong>: the network stops at the boundary, understating susceptibility for cells nearby.</li>
+        <li><strong>Resolution mismatch.</strong> A 30-meter hazard surface combined with a 6-kilometer climate signal can't discriminate between neighboring communities sharing a climate cell.</li>
+        <li><strong>The climate product is CMIP5-vintage</strong> (RCP scenarios), while current literature has largely moved to CMIP6/SSP.</li>
+      </ul>
+
+      <h2>What I'd Do Next</h2>
+      <ul>
+        <li><strong>Attribution analysis</strong> to separate the three candidate explanations for the post-2008 decline in burned area: suppression capacity, fuel exhaustion from the 2003/2007 megafires, or a small-N run of quiet years.</li>
+        <li><strong>Swap the ignition proxy.</strong> A kernel-density ignition layer already exists for the historical analysis; feeding it in directly would remove the proxy's most obvious blind spot.</li>
+        <li><strong>Add a suppression-access layer</strong> (travel time from the nearest fire station) to offset the model's one-directional treatment of road proximity.</li>
+        <li><strong>Move to a CMIP6/SSP climate product</strong> once one exists at comparable resolution.</li>
+        <li><strong>Extend the road network across the county line</strong> to remove the boundary-adjacent understatement.</li>
+      </ul>
+
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="project-sidebar">
+
+      <div class="sidebar-card">
+        <h3>Tools Used</h3>
+        <div class="tag-row">
+          <span class="tag">ArcGIS Pro 3.7</span>
+          <span class="tag">Spatial Analyst</span>
+          <span class="tag">Image Analyst</span>
+          <span class="tag">Python (arcpy)</span>
+          <span class="tag">ArcGIS Online</span>
+          <span class="tag">ArcGIS StoryMaps</span>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>Data Sources</h3>
+        <div class="tag-row">
+          <span class="tag">LANDFIRE 2025</span>
+          <span class="tag">USGS 3DEP</span>
+          <span class="tag">CAL FIRE FRAP</span>
+          <span class="tag">CAL FIRE FHSZ</span>
+          <span class="tag">MTBS / Sentinel-2</span>
+          <span class="tag">Cal-Adapt GCM</span>
+          <span class="tag">SanGIS</span>
+          <span class="tag">SANDAG</span>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>Links</h3>
+        <div class="sidebar-links">
+          <a href="https://storymaps.arcgis.com/stories/78eee37ac84f4439a5a24a69b0358723" target="_blank">
+            🗺️ Live StoryMap
+          </a>
+          <a href="https://github.com/a-barker/sdcounty-wildfire-capstone" target="_blank">
+            📁 View Code on GitHub
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>Data Terms</h3>
+        <p style="font-size:.8rem; color:var(--clr-muted); line-height:1.5;">
+          Derives from SanGIS/SANDAG, CAL FIRE FRAP, and Copernicus Sentinel-2 under their
+          respective public license terms. Student research project for educational purposes —
+          not an operational tool.
+        </p>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <img id="lightbox-img" src="" alt="Full-size screenshot" />
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer>
+    <p>© 2026 Adam Barker · <a href="index.html#projects">← Back to Projects</a></p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.fullscreen@3.0.2/Control.FullScreen.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    const map = L.map('project-map', { fullscreenControl: true }).setView([33.0, -116.8], 9);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+      maxZoom: 19
+    }).addTo(map);
+
+    L.marker([33.0, -116.8])
+      .addTo(map)
+      .bindPopup('<strong>San Diego County</strong><br>30 m wildfire susceptibility study area<br>12,282,657 cells · NAD83 CA Albers')
+      .openPopup();
+
+    function openLightbox(src) {
+      if (!src) return;
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox').classList.add('open');
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+  </script>
+</body>
+</html>
