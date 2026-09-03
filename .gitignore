@@ -1,0 +1,11 @@
+# Raw ArcGIS Online exports — too large for GitHub (some exceed the 100MB limit)
+# and superseded by the simplified *_web.geojson versions used on the site.
+data/susceptibility.json
+data/burn.json
+data/highway.json
+data/Ignition_points.json
+data/perimeter.json
+data/community.json
+data/projected.json
+data/climate.json
+data/modelssplit.json

@@ -69,12 +69,14 @@
         <a href="https://storymaps.arcgis.com/stories/78eee37ac84f4439a5a24a69b0358723" target="_blank">Read the interactive story →</a>
       </p>
 
-      <!-- Study area map -->
-      <h2>Study Area</h2>
+      <!-- Interactive Map -->
+      <h2>Interactive Map</h2>
       <div id="project-map"></div>
       <p style="font-size:.85rem; color:var(--clr-muted); margin-top:-.5rem;">
-        ↑ San Diego County study area. Everything runs on one grid: NAD83 California Albers
-        (EPSG 3310), 30 meters, 4,884 × 3,578 cells, 12,282,657 of them inside the county.
+        ↑ Toggle layers in the top-right control. The susceptibility surface is the classified
+        30 m model (yellow → maroon, Very Low → Very High). Hover a fire perimeter or community
+        boundary for details. Everything runs on one grid: NAD83 California Albers (EPSG 3310),
+        30 meters, 4,884 × 3,578 cells, 12,282,657 of them inside the county.
       </p>
 
       <h2>Data</h2>
@@ -276,17 +278,95 @@
   <script src="https://unpkg.com/leaflet.fullscreen@3.0.2/Control.FullScreen.js"></script>
   <script src="js/main.js"></script>
   <script>
-    const map = L.map('project-map', { fullscreenControl: true }).setView([33.0, -116.8], 9);
+    const map = L.map('project-map', { fullscreenControl: true }).setView([33.02, -116.85], 9);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
       maxZoom: 19
     }).addTo(map);
 
-    L.marker([33.0, -116.8])
-      .addTo(map)
-      .bindPopup('<strong>San Diego County</strong><br>30 m wildfire susceptibility study area<br>12,282,657 cells · NAD83 CA Albers')
-      .openPopup();
+    // ── Susceptibility surface (image overlay of the classified 30m raster) ──
+    const susceptibilityBounds = [
+      [32.535825862076216, -117.59729242870121],  // south-west
+      [33.510483727114405, -116.08139201904211]   // north-east
+    ];
+    const susceptibilityLayer = L.imageOverlay(
+      'img/susceptibility-overlay.png',
+      susceptibilityBounds,
+      { opacity: 0.82 }
+    ).addTo(map);
+
+    // ── Fire perimeters, 1950–2025 ──
+    const decadeColors = {
+      '1950-1959': '#fde68a', '1960-1969': '#fcd34d', '1970-1979': '#fbbf24',
+      '1980-1989': '#f59e0b', '1990-1999': '#f97316', '2000-2009': '#ea580c',
+      '2010-2019': '#dc2626', '2020-2025': '#991b1b'
+    };
+    let perimeterLayer;
+    fetch('data/perimeter_web.geojson')
+      .then(r => r.json())
+      .then(data => {
+        perimeterLayer = L.geoJSON(data, {
+          style: f => ({
+            color: decadeColors[f.properties.decade] || '#7f1d1d',
+            weight: 1.2,
+            fillOpacity: 0.15,
+            fillColor: decadeColors[f.properties.decade] || '#7f1d1d'
+          }),
+          onEachFeature: (feature, layer) => {
+            const p = feature.properties;
+            layer.bindTooltip(
+              `<strong>${p.name || 'Unnamed Fire'}</strong><br>
+               Year: ${p.year || '—'}<br>
+               Acres: ${p.acres ? p.acres.toLocaleString() : '—'}`,
+              { sticky: true }
+            );
+          }
+        }).addTo(map);
+      });
+
+    // ── Community boundaries (41 SANDAG subregional areas) ──
+    let communityLayer;
+    fetch('data/community_web.geojson')
+      .then(r => r.json())
+      .then(data => {
+        communityLayer = L.geoJSON(data, {
+          style: { color: '#1e293b', weight: 1, fillOpacity: 0, dashArray: '3,3' },
+          onEachFeature: (feature, layer) => {
+            layer.bindTooltip(`<strong>${feature.properties.name}</strong>`, { sticky: true });
+          }
+        }).addTo(map);
+      });
+
+    // ── Layer control ──
+    // (added once fetches resolve, via a short delay so layers exist)
+    setTimeout(() => {
+      L.control.layers(null, {
+        'Susceptibility surface': susceptibilityLayer,
+        'Fire perimeters (1950–2025)': perimeterLayer,
+        'Community boundaries': communityLayer
+      }, { collapsed: false }).addTo(map);
+    }, 800);
+
+    // ── Legend ──
+    const legend = L.control({ position: 'bottomright' });
+    legend.onAdd = function () {
+      const div = L.DomUtil.create('div');
+      div.style.cssText = 'background:#fff;padding:10px 14px;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.2);font-size:.8rem;line-height:1.9;min-width:170px;';
+      div.innerHTML = `
+        <strong style="display:block;margin-bottom:4px;">Modeled Susceptibility</strong>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:14px;height:14px;background:#fef3c7;display:inline-block;border:1px solid #ccc;"></i> Very Low</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:14px;height:14px;background:#fdba74;display:inline-block;"></i> Low</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:14px;height:14px;background:#fb923c;display:inline-block;"></i> Moderate</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:14px;height:14px;background:#ef4444;display:inline-block;"></i> High</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:14px;height:14px;background:#9f1239;display:inline-block;"></i> Very High</span>
+        <hr style="margin:6px 0;border:none;border-top:1px solid #e2e8f0;">
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:3px;background:#dc2626;display:inline-block;"></i> Fire perimeter</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:0;border-top:1.5px dashed #1e293b;display:inline-block;"></i> Community boundary</span>
+      `;
+      return div;
+    };
+    legend.addTo(map);
 
     function openLightbox(src) {
       if (!src) return;
