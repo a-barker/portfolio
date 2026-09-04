@@ -73,10 +73,10 @@
       <h2>Interactive Map</h2>
       <div id="project-map"></div>
       <p style="font-size:.85rem; color:var(--clr-muted); margin-top:-.5rem;">
-        ↑ Toggle layers in the top-right control. The susceptibility surface is the classified
-        30 m model (yellow → maroon, Very Low → Very High). Hover a fire perimeter or community
-        boundary for details. Everything runs on one grid: NAD83 California Albers (EPSG 3310),
-        30 meters, 4,884 × 3,578 cells, 12,282,657 of them inside the county.
+        ↑ Toggle layers in the top-right control: fire perimeters, community boundaries, ignition
+        points, the road network, the Valley Fire burn extent, climate projection coverage,
+        mid-century projected change, and the model's internal processing tiles. Hover any feature
+        for details. See the Screenshots section below for the full classified susceptibility surface.
       </p>
 
       <h2>Data</h2>
@@ -285,17 +285,6 @@
       maxZoom: 19
     }).addTo(map);
 
-    // ── Susceptibility surface (image overlay of the classified 30m raster) ──
-    const susceptibilityBounds = [
-      [32.535825862076216, -117.59729242870121],  // south-west
-      [33.510483727114405, -116.08139201904211]   // north-east
-    ];
-    const susceptibilityLayer = L.imageOverlay(
-      'img/susceptibility-overlay.png',
-      susceptibilityBounds,
-      { opacity: 0.82 }
-    ).addTo(map);
-
     // ── Fire perimeters, 1950–2025 ──
     const decadeColors = {
       '1950-1959': '#fde68a', '1960-1969': '#fcd34d', '1970-1979': '#fbbf24',
@@ -303,7 +292,7 @@
       '2010-2019': '#dc2626', '2020-2025': '#991b1b'
     };
     let perimeterLayer;
-    fetch('data/perimeter_web.geojson')
+    const perimeterFetch = fetch('data/perimeter_web.geojson')
       .then(r => r.json())
       .then(data => {
         perimeterLayer = L.geoJSON(data, {
@@ -327,7 +316,7 @@
 
     // ── Community boundaries (41 SANDAG subregional areas) ──
     let communityLayer;
-    fetch('data/community_web.geojson')
+    const communityFetch = fetch('data/community_web.geojson')
       .then(r => r.json())
       .then(data => {
         communityLayer = L.geoJSON(data, {
@@ -338,15 +327,112 @@
         }).addTo(map);
       });
 
+    // ── Ignition points, 1950–2025 (14,020 recorded ignitions) ──
+    let ignitionLayer;
+    const ignitionFetch = fetch('data/ignition_web.geojson')
+      .then(r => r.json())
+      .then(data => {
+        ignitionLayer = L.geoJSON(data, {
+          pointToLayer: (feature, latlng) => {
+            const human = feature.properties.cause === 'Human';
+            return L.circleMarker(latlng, {
+              radius: 2.5,
+              color: human ? '#b91c1c' : '#2563eb',
+              fillColor: human ? '#ef4444' : '#60a5fa',
+              fillOpacity: 0.6,
+              weight: 0.5
+            });
+          },
+          onEachFeature: (feature, layer) => {
+            const p = feature.properties;
+            layer.bindTooltip(
+              `<strong>${p.name || 'Unnamed'}</strong><br>
+               Year: ${p.year || 'N/A'} · Size: ${p.size ? p.size + ' ac' : 'N/A'}<br>
+               Cause: ${p.cause || 'N/A'}`,
+              { sticky: true }
+            );
+          }
+        });
+      });
+
+    // ── Road network (proxy for ignition access) ──
+    let highwayLayer;
+    const highwayFetch = fetch('data/highway_web.geojson')
+      .then(r => r.json())
+      .then(data => {
+        highwayLayer = L.geoJSON(data, {
+          style: { color: '#64748b', weight: 1, opacity: 0.6 },
+          onEachFeature: (feature, layer) => {
+            if (feature.properties.name) layer.bindTooltip(feature.properties.name, { sticky: true });
+          }
+        });
+      });
+
+    // ── Valley Fire burn extent, September 2020 ──
+    let burnLayer;
+    const burnFetch = fetch('data/burn_web.geojson')
+      .then(r => r.json())
+      .then(data => {
+        burnLayer = L.geoJSON(data, {
+          style: { color: '#7c2d12', weight: 1, fillColor: '#c2410c', fillOpacity: 0.45 }
+        });
+      });
+
+    // ── Climate projection coverage (gray = no projection available) ──
+    let climateLayer;
+    const climateFetch = fetch('data/climate_web.geojson')
+      .then(r => r.json())
+      .then(data => {
+        climateLayer = L.geoJSON(data, {
+          style: f => f.properties.gridcode === 0
+            ? { color: '#475569', weight: 1, fillColor: '#94a3b8', fillOpacity: 0.4 }
+            : { color: '#0369a1', weight: 1, fillColor: '#7dd3fc', fillOpacity: 0.15 },
+          onEachFeature: (feature, layer) => {
+            layer.bindTooltip(feature.properties.gridcode === 0 ? 'No climate projection' : 'Climate projection available', { sticky: true });
+          }
+        });
+      });
+
+    // ── Mid-century projected change classes (RCP 8.5, 2035–2064) ──
+    let projectedLayer;
+    const projectedColors = { 1: '#fef3c7', 2: '#fdba74', 3: '#fb923c', 4: '#ef4444', 5: '#9f1239' };
+    const projectedFetch = fetch('data/projected_web.geojson')
+      .then(r => r.json())
+      .then(data => {
+        projectedLayer = L.geoJSON(data, {
+          style: f => ({
+            color: '#333',
+            weight: 0.5,
+            fillColor: projectedColors[f.properties.gridcode] || '#ccc',
+            fillOpacity: 0.5
+          })
+        });
+      });
+
+    // ── Model processing tiles (internal grid used to run the analysis) ──
+    let tileLayer_;
+    const tileFetch = fetch('data/modelssplit_web.geojson')
+      .then(r => r.json())
+      .then(data => {
+        tileLayer_ = L.geoJSON(data, {
+          style: { color: '#94a3b8', weight: 1, dashArray: '2,4', fillOpacity: 0 }
+        });
+      });
+
     // ── Layer control ──
-    // (added once fetches resolve, via a short delay so layers exist)
-    setTimeout(() => {
-      L.control.layers(null, {
-        'Susceptibility surface': susceptibilityLayer,
-        'Fire perimeters (1950–2025)': perimeterLayer,
-        'Community boundaries': communityLayer
-      }, { collapsed: false }).addTo(map);
-    }, 800);
+    Promise.all([perimeterFetch, communityFetch, ignitionFetch, highwayFetch, burnFetch, climateFetch, projectedFetch, tileFetch])
+      .then(() => {
+        L.control.layers(null, {
+          'Fire perimeters (1950–2025)': perimeterLayer,
+          'Community boundaries': communityLayer,
+          'Ignition points (14,020)': ignitionLayer,
+          'Road network': highwayLayer,
+          'Valley Fire burn extent (2020)': burnLayer,
+          'Climate projection coverage': climateLayer,
+          'Mid-century projected change': projectedLayer,
+          'Model processing tiles': tileLayer_
+        }, { collapsed: false }).addTo(map);
+      });
 
     // ── Legend ──
     const legend = L.control({ position: 'bottomright' });
@@ -354,15 +440,12 @@
       const div = L.DomUtil.create('div');
       div.style.cssText = 'background:#fff;padding:10px 14px;border-radius:6px;box-shadow:0 1px 6px rgba(0,0,0,.2);font-size:.8rem;line-height:1.9;min-width:170px;';
       div.innerHTML = `
-        <strong style="display:block;margin-bottom:4px;">Modeled Susceptibility</strong>
-        <span style="display:flex;align-items:center;gap:8px;"><i style="width:14px;height:14px;background:#fef3c7;display:inline-block;border:1px solid #ccc;"></i> Very Low</span>
-        <span style="display:flex;align-items:center;gap:8px;"><i style="width:14px;height:14px;background:#fdba74;display:inline-block;"></i> Low</span>
-        <span style="display:flex;align-items:center;gap:8px;"><i style="width:14px;height:14px;background:#fb923c;display:inline-block;"></i> Moderate</span>
-        <span style="display:flex;align-items:center;gap:8px;"><i style="width:14px;height:14px;background:#ef4444;display:inline-block;"></i> High</span>
-        <span style="display:flex;align-items:center;gap:8px;"><i style="width:14px;height:14px;background:#9f1239;display:inline-block;"></i> Very High</span>
-        <hr style="margin:6px 0;border:none;border-top:1px solid #e2e8f0;">
+        <strong style="display:block;margin-bottom:4px;">Layer Key</strong>
         <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:3px;background:#dc2626;display:inline-block;"></i> Fire perimeter</span>
         <span style="display:flex;align-items:center;gap:8px;"><i style="width:16px;height:0;border-top:1.5px dashed #1e293b;display:inline-block;"></i> Community boundary</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:10px;height:10px;border-radius:50%;background:#ef4444;display:inline-block;"></i> Human-caused ignition</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:10px;height:10px;border-radius:50%;background:#60a5fa;display:inline-block;"></i> Natural ignition</span>
+        <span style="display:flex;align-items:center;gap:8px;"><i style="width:14px;height:14px;background:#c2410c;opacity:.6;display:inline-block;"></i> Valley Fire burn extent</span>
       `;
       return div;
     };
