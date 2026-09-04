@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Where Wildfire Could Burn in San Diego County — Adam Barker</title>
+  <title>Where Wildfire Could Burn in San Diego County | Adam Barker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -103,11 +103,11 @@
         first attempt into a surface with zero Very High cells).
       </p>
       <ul>
-        <li><strong>Fuel model — 35%</strong>: the necessary condition for fire, and the best-sourced input.</li>
-        <li><strong>Slope — 25%</strong>: Rothermel's slope factor scales with the <em>square</em> of slope, a published functional form.</li>
-        <li><strong>Distance to road — 15%</strong>: ~95% of California ignitions are human-caused, so proximity proxies for where people ignite.</li>
-        <li><strong>Aspect — 15%</strong>: solar loading acts indirectly, through fuel moisture.</li>
-        <li><strong>Burn frequency — 10%</strong>: lowest weight, because LANDFIRE already partly encodes recent burns as changed fuel.</li>
+        <li><strong>Fuel model (35%)</strong>: the necessary condition for fire, and the best-sourced input.</li>
+        <li><strong>Slope (25%)</strong>: Rothermel's slope factor scales with the <em>square</em> of slope, a published functional form.</li>
+        <li><strong>Distance to road (15%)</strong>: ~95% of California ignitions are human-caused, so proximity proxies for where people ignite.</li>
+        <li><strong>Aspect (15%)</strong>: solar loading acts indirectly, through fuel moisture.</li>
+        <li><strong>Burn frequency (10%)</strong>: lowest weight, because LANDFIRE already partly encodes recent burns as changed fuel.</li>
       </ul>
       <p>
         The model was validated against FHSZ using conditional distributions, not a single agreement
@@ -121,8 +121,8 @@
 
       <h3 style="font-size:1rem; font-weight:700; margin: 1.25rem 0 .5rem;">The Historical Record (1950–2025)</h3>
       <p>
-        Since 1950, <strong>46% of the county (1,247,928 acres) has burned at least once</strong>
-        — not 72%, which is what naive summation of overlapping fire perimeters gives (reburn
+        Since 1950, <strong>46% of the county (1,247,928 acres) has burned at least once</strong>,
+        not 72%, which is what naive summation of overlapping fire perimeters gives (reburn
         inflation factor: 1.66×). More fires does not mean more fire: the 1980s had the most
         ignitions of any decade (251) but burned only 7.8% of the total area, while the 2000s
         had 43% fewer fires and burned 41.8%. Mean fire size has collapsed:
@@ -150,7 +150,7 @@
         Where this model and FHSZ can be compared, they agree strikingly at the top of the scale:
         <strong>99.6% of modeled Very High sits inside FHSZ Very High</strong>, and 94.3% of
         modeled High does too. But <strong>398,874 acres of modeled High-or-Very-High land sit on
-        ground the state's hazard maps do not classify at all</strong> — Federal Responsibility
+        ground the state's hazard maps do not classify at all</strong>: Federal Responsibility
         Area (Cleveland National Forest, Camp Pendleton, BLM parcels, tribal trust land) that
         FHSZ isn't built to cover. Only 45.2% of modeled Very High falls inside an FHSZ polygon
         at all.
@@ -162,7 +162,7 @@
         The immediate post-fire assessment read systematically higher than MTBS's extended
         assessment: <strong>mean dNBR 0.431 vs. 0.235, a difference of +0.196, higher in 95.6%
         of 73,667 co-registered cells</strong>, with spatial patterns correlating at 0.79. But the
-        divergence was <em>not</em> concentrated in resprouting shrubland as predicted — the gap
+        divergence was <em>not</em> concentrated in resprouting shrubland as predicted; the gap
         varies by only about 0.01 across fuel families covering 91% of the burn. The higher
         immediate reading is real; why it's uniform rather than concentrated is left open rather
         than guessed.
@@ -171,7 +171,7 @@
       <h3 style="font-size:1rem; font-weight:700; margin: 1.25rem 0 .5rem;">A Warming County, Unevenly</h3>
       <p>
         <strong>Mid-century hazard moves inland and upslope.</strong> Nine of 41 communities show
-        higher susceptibility by 2035–2064 under RCP 8.5 — every one inland or backcountry, and
+        higher susceptibility by 2035–2064 under RCP 8.5, every one inland or backcountry, and
         six already sit in the county's seven most hazardous places today. Countywide, modeled
         area burned rises 3.53% under RCP 8.5 and 0.60% under RCP 4.5. The four climate models
         agree on the <em>direction</em> of change in only 44.0% of cells, and 10.2% of the county
@@ -185,14 +185,14 @@
           <img src="img/thumbnail-4.jpg" alt="Wildfire susceptibility surface, San Diego County"
                onerror="this.style.background='#dbeafe';"
                onclick="openLightbox(this.src)" />
-          <figcaption>↑ Click to enlarge — 30 m susceptibility surface, San Diego County</figcaption>
+          <figcaption>↑ Click to enlarge: 30 m susceptibility surface, San Diego County</figcaption>
         </figure>
       </div>
 
       <h2>Limitations</h2>
       <ul>
         <li><strong>No weather.</strong> No wind, humidity, or fuel moisture. Santa Ana winds are the single largest driver of catastrophic fire here, and this is a susceptibility surface, not a fire-behavior simulation.</li>
-        <li><strong>No suppression access.</strong> The model scores "close to road" as high because that's where people start fires — it can't represent the opposite effect where remote terrain lets a fire grow longer before response.</li>
+        <li><strong>No suppression access.</strong> The model scores "close to road" as high because that's where people start fires; it can't represent the opposite effect where remote terrain lets a fire grow longer before response.</li>
         <li><strong>Ignition is a proxy, not a measurement.</strong> Road proximity stands in for human ignition; a direct ignition-density layer would be a better input.</li>
         <li><strong>Road distances are biased near the county line</strong>: the network stops at the boundary, understating susceptibility for cells nearby.</li>
         <li><strong>Resolution mismatch.</strong> A 30-meter hazard surface combined with a 6-kilometer climate signal can't discriminate between neighboring communities sharing a climate cell.</li>
@@ -255,7 +255,7 @@
         <h3>Data Terms</h3>
         <p style="font-size:.8rem; color:var(--clr-muted); line-height:1.5;">
           Derives from SanGIS/SANDAG, CAL FIRE FRAP, and Copernicus Sentinel-2 under their
-          respective public license terms. Student research project for educational purposes —
+          respective public license terms. Student research project for educational purposes,
           not an operational tool.
         </p>
       </div>
@@ -317,8 +317,8 @@
             const p = feature.properties;
             layer.bindTooltip(
               `<strong>${p.name || 'Unnamed Fire'}</strong><br>
-               Year: ${p.year || '—'}<br>
-               Acres: ${p.acres ? p.acres.toLocaleString() : '—'}`,
+               Year: ${p.year || 'N/A'}<br>
+               Acres: ${p.acres ? p.acres.toLocaleString() : 'N/A'}`,
               { sticky: true }
             );
           }
