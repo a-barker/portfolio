@@ -15,9 +15,9 @@
     <div class="nav-inner">
       <a class="nav-logo" href="index.html">Adam Barker</a>
       <ul class="nav-links">
-        <li><a href="#about">About</a></li>
+        <li><a href="https://linkedin.com/in/adam-barker-gis-analyst" target="_blank">LinkedIn</a></li>
         <li><a href="#projects">Projects</a></li>
-        <li><a href="#contact">Contact</a></li>
+        <li><a href="img/adam-barker-resume.pdf" target="_blank">Resume</a></li>
       </ul>
     </div>
   </nav>
@@ -178,19 +178,21 @@
   <section id="contact">
     <p class="section-label">Contact</p>
     <h2 class="section-title">Get in Touch</h2>
-    <div class="contact-box">
+    <form class="contact-box" action="https://formsubmit.co/gis@adam-barker.com" method="POST">
       <p>
         I'm currently looking for GIS analyst and spatial developer roles.
-        Feel free to reach out — I'd love to talk about your project or team.
+        Send me a message and I'll get back to you.
       </p>
-      <div class="contact-links">
-        <a href="mailto:barker.a@gmail.com">barker.a@gmail.com</a>
-        <!-- Replace with your real links -->
-        <a href="https://linkedin.com/in/adam-barker-gis-analyst" target="_blank">LinkedIn</a>
-        <a href="https://github.com/a-barker" target="_blank">GitHub</a>
-        <a href="img/adam-barker-cv.pdf" target="_blank">Download CV</a>
+      <input type="hidden" name="_subject" value="New message from adam-barker.com" />
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="_template" value="table" />
+      <div class="form-row">
+        <input type="text" name="name" placeholder="Your Name" required />
+        <input type="email" name="email" placeholder="Your Email" required />
       </div>
-    </div>
+      <textarea name="message" placeholder="Message" rows="5" required></textarea>
+      <button type="submit" class="btn btn-primary">Send Message</button>
+    </form>
   </section>
 
   <!-- ── Footer ── -->
